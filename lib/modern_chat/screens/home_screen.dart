@@ -125,75 +125,96 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ],
               ),
               const Spacer(),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.white,
-                    size: 24,
+              AnimatedSlide(
+                duration: const Duration(milliseconds: 300),
+                offset: Offset(_currentTabIndex == 0 ? 0 : 0.2, 0),
+                curve: Curves.easeInOutCubic,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: _currentTabIndex == 0 ? 1.0 : 0.8,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.search,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 40,
+                        minHeight: 40,
+                      ),
+                      onPressed: () {
+                        showSearch(
+                          context: context,
+                          delegate: ChatSearchDelegate(users: sampleUsers),
+                        );
+                      },
+                    ),
                   ),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 40,
-                    minHeight: 40,
-                  ),
-                  onPressed: () {
-                    showSearch(
-                      context: context,
-                      delegate: ChatSearchDelegate(users: sampleUsers),
-                    );
-                  },
                 ),
               ),
               const SizedBox(width: 12),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: PopupMenuButton<String>(
-                  icon: const Icon(
-                    Icons.filter_list,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 40,
-                    minHeight: 40,
-                  ),
-                  offset: const Offset(0, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  onSelected: (value) {
-                    setState(() {
-                      switch (value) {
-                        case 'all_chats':
-                          filteredUsers = List.from(sampleUsers);
-                          break;
-                        case 'unread':
-                          filteredUsers = sampleUsers.where((user) => user.unreadCount > 0).toList();
-                          break;
-                        case 'groups':
-                          // Add group filtering logic
-                          break;
-                        case 'archived':
-                          // Add archived filtering logic
-                          break;
-                      }
-                    });
-                  },
-                  itemBuilder: (context) => [
-                    _buildFilterItem('All Chats', Icons.chat),
-                    _buildFilterItem('Unread', Icons.mark_chat_unread),
-                    _buildFilterItem('Groups', Icons.group),
-                    _buildFilterItem('Archived', Icons.archive),
-                  ],
+              AnimatedSlide(
+                duration: const Duration(milliseconds: 300),
+                offset: Offset(_currentTabIndex == 0 ? 0 : -0.5, 0),
+                curve: Curves.easeInOutCubic,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: _currentTabIndex == 0 ? 1.0 : 0.0,
+                  child: _currentTabIndex == 0
+                      ? Container(
+                          key: const ValueKey('filter'),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: PopupMenuButton<String>(
+                            icon: const Icon(
+                              Icons.filter_list,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(
+                              minWidth: 40,
+                              minHeight: 40,
+                            ),
+                            offset: const Offset(0, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            onSelected: (value) {
+                              setState(() {
+                                switch (value) {
+                                  case 'all_chats':
+                                    filteredUsers = List.from(sampleUsers);
+                                    break;
+                                  case 'unread':
+                                    filteredUsers = sampleUsers.where((user) => user.unreadCount > 0).toList();
+                                    break;
+                                  case 'groups':
+                                    // Add group filtering logic
+                                    break;
+                                  case 'archived':
+                                    // Add archived filtering logic
+                                    break;
+                                }
+                              });
+                            },
+                            itemBuilder: (context) => [
+                              _buildFilterItem('All Chats', Icons.chat),
+                              _buildFilterItem('Unread', Icons.mark_chat_unread),
+                              _buildFilterItem('Groups', Icons.group),
+                              _buildFilterItem('Archived', Icons.archive),
+                            ],
+                          ),
+                        )
+                      : const SizedBox(key: ValueKey('no-filter'), width: 0),
                 ),
               ),
               const SizedBox(width: 12),
@@ -551,7 +572,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ],
           ),
           child: FloatingActionButton(
-            backgroundColor: AppColors.primary,
+            backgroundColor: Colors.white,
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -560,28 +581,37 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 builder: (context) => _buildQuickActionsSheet(),
               );
             },
-            child: const Icon(Icons.chat_bubble_outline),
+            child: Icon(
+              Icons.chat_bubble_outline,
+              color: AppColors.primary,
+            ),
           ),
         );
 
       case 1: // Status tab
         return FloatingActionButton(
           key: const ValueKey('status_fab'),
-          backgroundColor: AppColors.primary,
+          backgroundColor: Colors.white,
+          child: Icon(
+            Icons.camera_alt,
+            color: AppColors.primary,
+          ),
           onPressed: () {
             // Handle add status
           },
-          child: const Icon(Icons.camera_alt),
         );
 
       case 2: // Calls tab
         return FloatingActionButton(
           key: const ValueKey('calls_fab'),
-          backgroundColor: AppColors.primary,
+          backgroundColor: Colors.white,
+          child: Icon(
+            Icons.add_call,
+            color: AppColors.primary,
+          ),
           onPressed: () {
             // Handle new call
           },
-          child: const Icon(Icons.add_call),
         );
 
       default:
@@ -856,24 +886,24 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                    horizontal: 10,
+                    vertical: 4,
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.access_time,
-                        size: 16,
+                        size: 14,
                         color: AppColors.primary,
                       ),
                       const SizedBox(width: 4),
@@ -882,20 +912,33 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         style: AppTextStyles.subtitle.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w600,
+                          fontSize: 12,
                         ),
                       ),
                     ],
                   ),
                 ),
                 const Spacer(),
-                IconButton(
-                  icon: Icon(
-                    Icons.add_call,
-                    color: AppColors.primary,
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  onPressed: () {
-                    // Handle new call
-                  },
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.add_call,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      // Handle new call
+                    },
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 36,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -944,82 +987,129 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget _buildCallTile(ChatUser user, Call call) {
     final timeAgo = _getTimeAgo(call.timestamp);
     
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Stack(
-        children: [
-          UserAvatar(
-            imageUrl: user.avatarUrl,
-            size: 56,
-            isOnline: user.isOnline,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: call.type == CallType.video ? Colors.blue : Colors.green,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
+        ],
+      ),
+      child: Row(
+        children: [
+          Stack(
+            children: [
+              UserAvatar(
+                imageUrl: user.avatarUrl,
+                size: 50,
+                isOnline: user.isOnline,
               ),
-              child: Icon(
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: call.type == CallType.video ? Colors.blue : Colors.green,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: Icon(
+                    call.type == CallType.video ? Icons.videocam : Icons.call,
+                    color: Colors.white,
+                    size: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  user.name,
+                  style: AppTextStyles.heading2.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      call.status == CallStatus.incoming
+                          ? Icons.call_received
+                          : call.status == CallStatus.outgoing
+                              ? Icons.call_made
+                              : Icons.call_missed,
+                      size: 14,
+                      color: call.status == CallStatus.missed
+                          ? Colors.red
+                          : Colors.green,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      timeAgo,
+                      style: AppTextStyles.subtitle.copyWith(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                    if (call.duration > 0) ...[
+                      Text(
+                        ' • ',
+                        style: AppTextStyles.subtitle.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        _formatDuration(call.duration),
+                        style: AppTextStyles.subtitle.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 8),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: Icon(
                 call.type == CallType.video ? Icons.videocam : Icons.call,
-                color: Colors.white,
-                size: 12,
+                color: AppColors.primary,
+                size: 20,
+              ),
+              onPressed: () {
+                // Handle call
+              },
+              padding: const EdgeInsets.all(8),
+              constraints: const BoxConstraints(
+                minWidth: 36,
+                minHeight: 36,
               ),
             ),
           ),
         ],
-      ),
-      title: Text(
-        user.name,
-        style: AppTextStyles.heading2.copyWith(fontSize: 16),
-      ),
-      subtitle: Row(
-        children: [
-          Icon(
-            call.status == CallStatus.incoming
-                ? Icons.call_received
-                : call.status == CallStatus.outgoing
-                    ? Icons.call_made
-                    : Icons.call_missed,
-            size: 16,
-            color: call.status == CallStatus.missed
-                ? Colors.red
-                : Colors.green,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            timeAgo,
-            style: AppTextStyles.subtitle.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          if (call.duration > 0) ...[
-            Text(
-              ' • ',
-              style: AppTextStyles.subtitle.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            Text(
-              _formatDuration(call.duration),
-              style: AppTextStyles.subtitle.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ],
-      ),
-      trailing: IconButton(
-        icon: Icon(
-          call.type == CallType.video ? Icons.videocam : Icons.call,
-          color: AppColors.primary,
-        ),
-        onPressed: () {
-          // Handle call
-        },
       ),
     );
   }
