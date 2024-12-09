@@ -731,53 +731,49 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildMyStatus(),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.update,
+                        size: 14,
+                        color: AppColors.primary,
                       ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Recent Updates',
+                        style: AppTextStyles.subtitle.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.update,
-                            size: 16,
-                            color: AppColors.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Recent Updates',
-                            style: AppTextStyles.subtitle.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${recentStories.length} new',
-                      style: AppTextStyles.subtitle.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const Spacer(),
+                Text(
+                  '${recentStories.length} new',
+                  style: AppTextStyles.subtitle.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         SliverList(
@@ -785,7 +781,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             (context, index) {
               final story = recentStories[index];
               final user = sampleUsers.firstWhere((u) => u.id == story.userId);
-              return _buildStatusTile(user, story);
+              return _buildStoryTile(user, story);
             },
             childCount: recentStories.length,
           ),
@@ -794,64 +790,88 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildMyStatus() {
-    return ListTile(
-      leading: StoryRing(
-        size: 56,
-        isOwn: true,
-        onTap: () {
-          // Handle my status tap
-        },
-      ),
-      title: Text(
-        'My Status',
-        style: AppTextStyles.heading2.copyWith(fontSize: 16),
-      ),
-      subtitle: const Text(
-        'Tap to add status update',
-        style: AppTextStyles.subtitle,
-      ),
-    );
-  }
-
-  Widget _buildStatusTile(ChatUser user, Story story) {
+  Widget _buildStoryTile(ChatUser user, Story story) {
     final timeAgo = _getTimeAgo(story.timestamp);
     
-    return ListTile(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => StatusViewScreen(user: user, story: story),
-          ),
-        );
-      },
-      leading: StoryRing(
-        size: 56,
-        imageUrl: user.avatarUrl,
-        isViewed: story.isViewed,
-      ),
-      title: Text(
-        user.name,
-        style: AppTextStyles.heading2.copyWith(fontSize: 16),
-      ),
-      subtitle: Row(
-        children: [
-          if (!story.isViewed)
-            Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.only(right: 6),
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-              ),
-            ),
-          Text(
-            timeAgo,
-            style: AppTextStyles.subtitle,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StatusViewScreen(user: user, story: story),
+            ),
+          );
+        },
+        child: Row(
+          children: [
+            StoryRing(
+              size: 52,
+              imageUrl: user.avatarUrl,
+              isViewed: story.isViewed,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    user.name,
+                    style: AppTextStyles.heading2.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      if (!story.isViewed)
+                        Container(
+                          width: 6,
+                          height: 6,
+                          margin: const EdgeInsets.only(right: 4),
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      Text(
+                        timeAgo,
+                        style: AppTextStyles.subtitle.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        ' • ${story.items.length} items',
+                        style: AppTextStyles.subtitle.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -886,60 +906,34 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.access_time,
+                    size: 14,
+                    color: AppColors.primary,
                   ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 14,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Recent',
-                        style: AppTextStyles.subtitle.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.add_call,
+                  const SizedBox(width: 4),
+                  Text(
+                    'Recent',
+                    style: AppTextStyles.subtitle.copyWith(
                       color: AppColors.primary,
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      // Handle new call
-                    },
-                    padding: const EdgeInsets.all(8),
-                    constraints: const BoxConstraints(
-                      minWidth: 36,
-                      minHeight: 36,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
