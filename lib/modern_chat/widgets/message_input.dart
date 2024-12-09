@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:modern_chat/modern_chat/theme/app_colors.dart';
 import 'package:modern_chat/modern_chat/theme/app_text_styles.dart';
 
-/// A widget that displays the message input field with attachment and send buttons
-class MessageInput extends StatelessWidget {
+class MessageInput extends StatefulWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
   final VoidCallback onAttachment;
@@ -16,9 +15,31 @@ class MessageInput extends StatelessWidget {
   });
 
   @override
+  State<MessageInput> createState() => _MessageInputState();
+}
+
+class _MessageInputState extends State<MessageInput> {
+  bool _isComposing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_handleTextChange);
+  }
+
+  void _handleTextChange() {
+    final isComposing = widget.controller.text.isNotEmpty;
+    if (isComposing != _isComposing) {
+      setState(() {
+        _isComposing = isComposing;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.background,
         boxShadow: [
@@ -33,9 +54,16 @@ class MessageInput extends StatelessWidget {
         child: Row(
           children: [
             IconButton(
+              icon: const Icon(Icons.emoji_emotions_outlined),
+              color: AppColors.textSecondary,
+              onPressed: () {
+                // Show emoji picker
+              },
+            ),
+            IconButton(
               icon: const Icon(Icons.attach_file),
               color: AppColors.textSecondary,
-              onPressed: onAttachment,
+              onPressed: widget.onAttachment,
             ),
             Expanded(
               child: Container(
@@ -45,14 +73,14 @@ class MessageInput extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: TextField(
-                  controller: controller,
+                  controller: widget.controller,
                   style: AppTextStyles.bodyText,
+                  maxLines: null,
                   decoration: const InputDecoration(
-                    hintText: 'Type a message...',
+                    hintText: 'Message',
                     hintStyle: AppTextStyles.subtitle,
                     border: InputBorder.none,
                   ),
-                  maxLines: null,
                 ),
               ),
             ),
@@ -63,14 +91,25 @@ class MessageInput extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: IconButton(
-                icon: const Icon(Icons.send),
+                icon: Icon(
+                  _isComposing ? Icons.send : Icons.mic,
+                  size: 20,
+                ),
                 color: Colors.white,
-                onPressed: onSend,
+                onPressed: _isComposing ? widget.onSend : () {
+                  // Handle voice recording
+                },
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_handleTextChange);
+    super.dispose();
   }
 } 
