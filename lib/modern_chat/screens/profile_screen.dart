@@ -5,6 +5,7 @@ import 'package:modern_chat/modern_chat/screens/chat_detail_screen.dart';
 import 'package:modern_chat/modern_chat/theme/app_colors.dart';
 import 'package:modern_chat/modern_chat/theme/app_text_styles.dart';
 import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfileScreen extends StatelessWidget {
   final ChatUser user;
@@ -38,7 +39,7 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 250,
       pinned: true,
       backgroundColor: AppColors.primary,
       systemOverlayStyle: const SystemUiOverlayStyle(
@@ -56,26 +57,26 @@ class ProfileScreen extends StatelessWidget {
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.network(
-              user.avatarUrl,
+        collapseMode: CollapseMode.pin,
+        background: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: CachedNetworkImageProvider(user.coverUrl),
               fit: BoxFit.cover,
             ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
-                  ],
-                ),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.7),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

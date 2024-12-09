@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:modern_chat/modern_chat/theme/app_colors.dart';
 
 /// A widget that displays a user's avatar with online status indicator
@@ -22,20 +23,33 @@ class UserAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: AppColors.secondaryBackground,
-        image: imageUrl != null
-            ? DecorationImage(
-                image: NetworkImage(imageUrl!),
-                fit: BoxFit.cover,
-              )
-            : null,
       ),
-      child: imageUrl == null
-          ? Icon(
+      clipBehavior: Clip.antiAlias,
+      child: imageUrl != null
+          ? CachedNetworkImage(
+              imageUrl: imageUrl!,
+              fit: BoxFit.cover,
+              width: size,
+              height: size,
+              placeholder: (context, url) => Container(
+                color: AppColors.secondaryBackground,
+                child: Icon(
+                  Icons.person,
+                  size: size * 0.6,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              errorWidget: (context, url, error) => Icon(
+                Icons.person,
+                size: size * 0.6,
+                color: AppColors.textSecondary,
+              ),
+            )
+          : Icon(
               Icons.person,
               size: size * 0.6,
               color: AppColors.textSecondary,
-            )
-          : null,
+            ),
     );
   }
 } 
