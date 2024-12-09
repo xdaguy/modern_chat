@@ -380,15 +380,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
       ),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 8,
               offset: const Offset(0, 2),
             ),
           ],
@@ -406,16 +406,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: AppColors.primary.withOpacity(0.1),
-                        width: 2,
+                        width: 1.5,
                       ),
                     ),
                     child: UserAvatar(
                       imageUrl: user.avatarUrl,
                       isOnline: user.isOnline,
-                      size: 60,
+                      size: 50,
                     ),
                   ),
                   if (user.isOnline)
@@ -423,8 +423,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       right: 0,
                       bottom: 0,
                       child: Container(
-                        width: 18,
-                        height: 18,
+                        width: 14,
+                        height: 14,
                         decoration: BoxDecoration(
                           color: AppColors.online,
                           shape: BoxShape.circle,
@@ -438,36 +438,41 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     children: [
-                      Text(
-                        user.name,
-                        style: AppTextStyles.heading2.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Text(
+                          user.name,
+                          style: AppTextStyles.heading2.copyWith(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 4),
                       Text(
                         user.lastMessageTime,
                         style: AppTextStyles.subtitle.copyWith(
-                          fontSize: 12,
+                          fontSize: 11,
                           color: AppColors.textSecondary,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       const Icon(
                         Icons.done_all,
-                        size: 16,
+                        size: 14,
                         color: AppColors.primary,
                       ),
                       const SizedBox(width: 4),
@@ -476,30 +481,33 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           user.lastMessage,
                           style: AppTextStyles.subtitle.copyWith(
                             color: AppColors.textSecondary,
+                            fontSize: 13,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (user.unreadCount > 0)
+                      if (user.unreadCount > 0) ...[
+                        const SizedBox(width: 4),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                            horizontal: 6,
+                            vertical: 2,
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             user.unreadCount.toString(),
                             style: AppTextStyles.subtitle.copyWith(
                               color: AppColors.primary,
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
+                      ],
                     ],
                   ),
                 ],
@@ -1220,24 +1228,24 @@ class _PinnedChatsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
+                  horizontal: 10,
+                  vertical: 4,
                 ),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.push_pin,
-                      size: 16,
+                      size: 14,
                       color: AppColors.primary,
                     ),
                     const SizedBox(width: 4),
@@ -1246,6 +1254,7 @@ class _PinnedChatsSection extends StatelessWidget {
                       style: AppTextStyles.subtitle.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -1254,11 +1263,15 @@ class _PinnedChatsSection extends StatelessWidget {
               const Spacer(),
               TextButton(
                 onPressed: () {},
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                ),
                 child: Text(
                   'See all',
                   style: AppTextStyles.subtitle.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w500,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -1266,7 +1279,7 @@ class _PinnedChatsSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 110,
+          height: 90,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -1276,50 +1289,7 @@ class _PinnedChatsSection extends StatelessWidget {
             },
           ),
         ),
-        const SizedBox(height: 16),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.filter_list,
-                color: AppColors.primary,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Filter conversations',
-                style: AppTextStyles.subtitle.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '3',
-                  style: AppTextStyles.subtitle.copyWith(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
       ],
     );
   }
@@ -1340,9 +1310,10 @@ class _PinnedChatItem extends StatelessWidget {
         ),
       ),
       child: Container(
-        width: 80,
+        width: 72,
         margin: const EdgeInsets.symmetric(horizontal: 4),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
               onTap: () => Navigator.push(
@@ -1354,45 +1325,47 @@ class _PinnedChatItem extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: AppColors.primary.withOpacity(0.1),
-                    width: 2,
+                    width: 1.5,
                   ),
                 ),
                 child: UserAvatar(
                   imageUrl: user.avatarUrl,
                   isOnline: user.isOnline,
-                  size: 60,
+                  size: 52,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Text(
-                user.name,
-                style: AppTextStyles.subtitle.copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+            const SizedBox(height: 4),
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 3,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.02),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  user.name,
+                  style: AppTextStyles.subtitle.copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ],
