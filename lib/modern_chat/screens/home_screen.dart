@@ -13,6 +13,7 @@ import 'package:modern_chat/modern_chat/screens/status_view_screen.dart';
 import 'package:modern_chat/modern_chat/models/call.dart';
 import 'package:modern_chat/modern_chat/screens/new_chat_screen.dart';
 import 'package:modern_chat/modern_chat/utils/page_routes.dart';
+import 'package:modern_chat/modern_chat/screens/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -248,10 +249,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
+                  color: Colors.white,
+                  elevation: 8,
                   itemBuilder: (context) => [
-                    _buildMenuItem(Icons.group_add, 'New Group'),
-                    _buildMenuItem(Icons.settings, 'Settings'),
-                    _buildMenuItem(Icons.dark_mode, 'Theme'),
+                    _buildMoreMenuItem(
+                      icon: Icons.settings,
+                      title: 'Settings',
+                      subtitle: 'App preferences',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          SlidePageRoute(
+                            child: const SettingsScreen(),
+                            direction: SlideDirection.left,
+                          ),
+                        );
+                      },
+                    ),
+                    _buildMoreMenuItem(
+                      icon: Icons.dark_mode,
+                      title: 'Theme',
+                      subtitle: 'Change app appearance',
+                      onTap: () {
+                        // Handle theme change
+                      },
+                    ),
+                    _buildMoreMenuItem(
+                      icon: Icons.notifications,
+                      title: 'Notifications',
+                      subtitle: 'Manage alerts',
+                      onTap: () {
+                        // Handle notifications
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -414,141 +444,149 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       tag: 'chat_${user.id}',
       child: Material(
         color: Colors.transparent,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            SlidePageRoute(
+              child: ChatDetailScreen(user: user),
+            ),
           ),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  SlidePageRoute(
-                    child: ChatDetailScreen(user: user),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    ScalePageRoute(
+                      child: ProfileScreen(user: user),
+                    ),
                   ),
-                ),
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppColors.primary.withOpacity(0.1),
-                          width: 1.5,
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.primary.withOpacity(0.1),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: UserAvatar(
+                          imageUrl: user.avatarUrl,
+                          isOnline: user.isOnline,
+                          size: 50,
                         ),
                       ),
-                      child: UserAvatar(
-                        imageUrl: user.avatarUrl,
-                        isOnline: user.isOnline,
-                        size: 50,
-                      ),
-                    ),
-                    if (user.isOnline)
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          width: 14,
-                          height: 14,
-                          decoration: BoxDecoration(
-                            color: AppColors.online,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            user.name,
-                            style: AppTextStyles.heading2.copyWith(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          user.lastMessageTime,
-                          style: AppTextStyles.subtitle.copyWith(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.done_all,
-                          size: 14,
-                          color: AppColors.primary,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            user.lastMessage,
-                            style: AppTextStyles.subtitle.copyWith(
-                              color: AppColors.textSecondary,
-                              fontSize: 13,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (user.unreadCount > 0) ...[
-                          const SizedBox(width: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
+                      if (user.isOnline)
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: Container(
+                            width: 14,
+                            height: 14,
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              user.unreadCount.toString(),
-                              style: AppTextStyles.subtitle.copyWith(
-                                color: AppColors.primary,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
+                              color: AppColors.online,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
                               ),
                             ),
                           ),
-                        ],
-                      ],
-                    ),
-                  ],
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              user.name,
+                              style: AppTextStyles.heading2.copyWith(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            user.lastMessageTime,
+                            style: AppTextStyles.subtitle.copyWith(
+                              fontSize: 11,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.done_all,
+                            size: 14,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              user.lastMessage,
+                              style: AppTextStyles.subtitle.copyWith(
+                                color: AppColors.textSecondary,
+                                fontSize: 13,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (user.unreadCount > 0) ...[
+                            const SizedBox(width: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                user.unreadCount.toString(),
+                                style: AppTextStyles.subtitle.copyWith(
+                                  color: AppColors.primary,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1381,6 +1419,64 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _buildMoreMenuItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    VoidCallback? onTap,
+  }) {
+    return PopupMenuItem(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: InkWell(
+        onTap: () {
+          Navigator.pop(context);
+          onTap?.call();
+        },
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: AppColors.primary,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.subtitle.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTextStyles.subtitle.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
