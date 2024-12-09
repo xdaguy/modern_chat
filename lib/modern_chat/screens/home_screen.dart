@@ -11,6 +11,8 @@ import 'package:modern_chat/modern_chat/widgets/shimmer_loading.dart';
 import 'package:modern_chat/modern_chat/models/story.dart';
 import 'package:modern_chat/modern_chat/screens/status_view_screen.dart';
 import 'package:modern_chat/modern_chat/models/call.dart';
+import 'package:modern_chat/modern_chat/screens/new_chat_screen.dart';
+import 'package:modern_chat/modern_chat/utils/page_routes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +21,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<ChatUser> filteredUsers = [];
   String searchQuery = '';
   bool _isLoading = true;
@@ -28,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   List<Call> _calls = [];
   late TabController _tabController;
   int _currentTabIndex = 0;
+  late AnimationController _bottomSheetController;
 
   @override
   void initState() {
@@ -36,18 +39,24 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     _stories = List.from(sampleStories);
     _calls = List.from(sampleCalls);
     
-    // Initialize TabController
+    // Initialize controllers
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       setState(() {
         _currentTabIndex = _tabController.index;
       });
     });
+
+    _bottomSheetController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _bottomSheetController.dispose();
     super.dispose();
   }
 
@@ -83,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       appBar: _buildAppBar(),
       body: TabBarView(
         controller: _tabController,
+        physics: const BouncingScrollPhysics(),
         children: [
           _buildChatList(),
           _buildStatusList(),
@@ -400,154 +410,175 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildChatTile(BuildContext context, ChatUser user) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProfileScreen(user: user),
+    return Hero(
+      tag: 'chat_${user.id}',
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
-            ),
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.primary.withOpacity(0.1),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: UserAvatar(
-                    imageUrl: user.avatarUrl,
-                    isOnline: user.isOnline,
-                    size: 50,
-                  ),
-                ),
-                if (user.isOnline)
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      width: 14,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: AppColors.online,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        user.name,
-                        style: AppTextStyles.heading2.copyWith(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      user.lastMessageTime,
-                      style: AppTextStyles.subtitle.copyWith(
-                        fontSize: 11,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  SlidePageRoute(
+                    child: ChatDetailScreen(user: user),
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Row(
+                child: Stack(
                   children: [
-                    const Icon(
-                      Icons.done_all,
-                      size: 14,
-                      color: AppColors.primary,
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        user.lastMessage,
-                        style: AppTextStyles.subtitle.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.1),
+                          width: 1.5,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      ),
+                      child: UserAvatar(
+                        imageUrl: user.avatarUrl,
+                        isOnline: user.isOnline,
+                        size: 50,
                       ),
                     ),
-                    if (user.unreadCount > 0) ...[
-                      const SizedBox(width: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          user.unreadCount.toString(),
-                          style: AppTextStyles.subtitle.copyWith(
-                            color: AppColors.primary,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                    if (user.isOnline)
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 14,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: AppColors.online,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
                           ),
                         ),
                       ),
-                    ],
                   ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            user.name,
+                            style: AppTextStyles.heading2.copyWith(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          user.lastMessageTime,
+                          style: AppTextStyles.subtitle.copyWith(
+                            fontSize: 11,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.done_all,
+                          size: 14,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            user.lastMessage,
+                            style: AppTextStyles.subtitle.copyWith(
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (user.unreadCount > 0) ...[
+                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              user.unreadCount.toString(),
+                              style: AppTextStyles.subtitle.copyWith(
+                                color: AppColors.primary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget _buildFloatingActionButton(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 300),
       transitionBuilder: (Widget child, Animation<double> animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: ScaleTransition(
-            scale: animation,
-            child: child,
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 1),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+          )),
+          child: FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween<double>(
+                begin: 0.5,
+                end: 1.0,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutBack,
+              )),
+              child: child,
+            ),
           ),
         );
       },
@@ -577,6 +608,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 context: context,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
+                transitionAnimationController: _bottomSheetController,
                 builder: (context) => _buildQuickActionsSheet(),
               );
             },
@@ -619,46 +651,60 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildQuickActionsSheet() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(top: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 1.0, end: 0.0),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 50 * value),
+          child: Opacity(
+            opacity: 1 - value,
+            child: child,
           ),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Start a conversation',
-                  style: AppTextStyles.heading2.copyWith(fontSize: 20),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Choose how you want to start',
-                  style: AppTextStyles.subtitle,
-                ),
-                const SizedBox(height: 24),
-                _buildQuickActionGrid(),
-              ],
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
-        ],
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Start a conversation',
+                    style: AppTextStyles.heading2.copyWith(fontSize: 20),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Choose how you want to start',
+                    style: AppTextStyles.subtitle,
+                  ),
+                  const SizedBox(height: 24),
+                  _buildQuickActionGrid(),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }
@@ -675,46 +721,79 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           Icons.message,
           'New Chat',
           Colors.blue,
+          onTap: () {
+            Navigator.pop(context); // Close bottom sheet
+            Navigator.push(
+              context,
+              SlidePageRoute(
+                child: const NewChatScreen(),
+                direction: SlideDirection.up,
+              ),
+            );
+          },
         ),
         _buildQuickActionItem(
           Icons.group_add,
           'New Group',
           Colors.green,
+          onTap: () {
+            // Handle new group
+          },
         ),
         _buildQuickActionItem(
           Icons.broadcast_on_personal,
           'Broadcast',
           Colors.orange,
+          onTap: () {
+            // Handle broadcast
+          },
         ),
       ],
     );
   }
 
-  Widget _buildQuickActionItem(IconData icon, String label, Color color) {
-    return Column(
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
+  Widget _buildQuickActionItem(IconData icon, String label, Color color, {VoidCallback? onTap}) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOutBack,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.5 + (value * 0.5),
+          child: Opacity(
+            opacity: value.clamp(0.0, 1.0),
+            child: child,
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 28,
-          ),
+        );
+      },
+      child: GestureDetector(
+        onTap: onTap,
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: AppTextStyles.subtitle.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: AppTextStyles.subtitle.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+      ),
     );
   }
 
@@ -793,84 +872,90 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget _buildStoryTile(ChatUser user, Story story) {
     final timeAgo = _getTimeAgo(story.timestamp);
     
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return Hero(
+      tag: 'story_${story.id}',
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => StatusViewScreen(user: user, story: story),
-            ),
-          );
-        },
-        child: Row(
-          children: [
-            StoryRing(
-              size: 52,
-              imageUrl: user.avatarUrl,
-              isViewed: story.isViewed,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    user.name,
-                    style: AppTextStyles.heading2.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                FadePageRoute(
+                  child: StatusViewScreen(user: user, story: story),
+                ),
+              );
+            },
+            child: Row(
+              children: [
+                StoryRing(
+                  size: 52,
+                  imageUrl: user.avatarUrl,
+                  isViewed: story.isViewed,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (!story.isViewed)
-                        Container(
-                          width: 6,
-                          height: 6,
-                          margin: const EdgeInsets.only(right: 4),
-                          decoration: const BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
                       Text(
-                        timeAgo,
-                        style: AppTextStyles.subtitle.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
+                        user.name,
+                        style: AppTextStyles.heading2.copyWith(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        ' • ${story.items.length} items',
-                        style: AppTextStyles.subtitle.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
-                        ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          if (!story.isViewed)
+                            Container(
+                              width: 6,
+                              height: 6,
+                              margin: const EdgeInsets.only(right: 4),
+                              decoration: const BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          Text(
+                            timeAgo,
+                            style: AppTextStyles.subtitle.copyWith(
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
+                            ),
+                          ),
+                          Text(
+                            ' • ${story.items.length} items',
+                            style: AppTextStyles.subtitle.copyWith(
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -1390,8 +1475,8 @@ class _PinnedChatItem extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => ChatDetailScreen(user: user),
+        SlidePageRoute(
+          child: ChatDetailScreen(user: user),
         ),
       ),
       child: Container(
@@ -1403,8 +1488,8 @@ class _PinnedChatItem extends StatelessWidget {
             GestureDetector(
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => ProfileScreen(user: user),
+                ScalePageRoute(
+                  child: ProfileScreen(user: user),
                 ),
               ),
               child: Container(
@@ -1535,8 +1620,9 @@ class ChatSearchDelegate extends SearchDelegate<String> {
             close(context, user.id);
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => ChatDetailScreen(user: user),
+              SlidePageRoute(
+                child: ChatDetailScreen(user: user),
+                direction: SlideDirection.up,
               ),
             );
           },
