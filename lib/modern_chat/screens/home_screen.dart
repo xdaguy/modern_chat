@@ -6,6 +6,8 @@ import 'package:modern_chat/modern_chat/widgets/story_ring.dart';
 import 'package:modern_chat/modern_chat/screens/chat_detail_screen.dart';
 import 'package:modern_chat/modern_chat/models/chat_user.dart';
 import 'package:modern_chat/modern_chat/screens/profile_screen.dart';
+import 'package:modern_chat/modern_chat/widgets/animated_list_item.dart';
+import 'package:modern_chat/modern_chat/widgets/shimmer_loading.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,11 +19,24 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<ChatUser> filteredUsers = [];
   String searchQuery = '';
+  bool _isLoading = true;
+  bool _isRefreshing = false;
 
   @override
   void initState() {
     super.initState();
-    filteredUsers = List.from(sampleUsers);
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    // Simulate loading delay
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) {
+      setState(() {
+        filteredUsers = List.from(sampleUsers);
+        _isLoading = false;
+      });
+    }
   }
 
   void _handleSearch(String query) {
@@ -277,45 +292,60 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildChatList() {
+    if (_isLoading) {
+      return _buildLoadingState();
+    }
+
     final pinnedUsers = filteredUsers.where((user) => user.isPinned).toList();
     final regularUsers = filteredUsers.where((user) => !user.isPinned).toList();
     
-    return CustomScrollView(
-      slivers: [
-        if (pinnedUsers.isNotEmpty)
+    return RefreshIndicator(
+      color: AppColors.primary,
+      onRefresh: () async {
+        setState(() => _isRefreshing = true);
+        await _loadData();
+        setState(() => _isRefreshing = false);
+      },
+      child: CustomScrollView(
+        slivers: [
+          if (pinnedUsers.isNotEmpty)
+            SliverToBoxAdapter(
+              child: _PinnedChatsSection(users: pinnedUsers),
+            ),
           SliverToBoxAdapter(
-            child: _PinnedChatsSection(users: pinnedUsers),
-          ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Text(
-                  searchQuery.isEmpty ? 'Recent Chats' : 'Search Results',
-                  style: AppTextStyles.subtitle,
-                ),
-                const Spacer(),
-                if (searchQuery.isEmpty)
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.sort, size: 20),
-                    label: const Text('Sort'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.textSecondary,
-                    ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Text(
+                    searchQuery.isEmpty ? 'Recent Chats' : 'Search Results',
+                    style: AppTextStyles.subtitle,
                   ),
-              ],
+                  const Spacer(),
+                  if (searchQuery.isEmpty)
+                    TextButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.sort, size: 20),
+                      label: const Text('Sort'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
-        ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) => _buildChatTile(context, regularUsers[index]),
-            childCount: regularUsers.length,
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => AnimatedListItem(
+                index: index,
+                child: _buildChatTile(context, regularUsers[index]),
+              ),
+              childCount: regularUsers.length,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -828,6 +858,115 @@ class _HomeScreenState extends State<HomeScreen> {
             style: AppTextStyles.subtitle.copyWith(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return ListView.builder(
+      itemCount: 8,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemBuilder: (context, index) => _buildLoadingTile(),
+    );
+  }
+
+  Widget _buildLoadingTile() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          ShimmerLoading(
+            baseColor: Colors.grey[200],
+            highlightColor: Colors.grey[100],
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    ShimmerLoading(
+                      baseColor: Colors.grey[200],
+                      highlightColor: Colors.grey[100],
+                      child: Container(
+                        width: 120,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    ShimmerLoading(
+                      baseColor: Colors.grey[200],
+                      highlightColor: Colors.grey[100],
+                      child: Container(
+                        width: 40,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    ShimmerLoading(
+                      baseColor: Colors.grey[200],
+                      highlightColor: Colors.grey[100],
+                      child: Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ShimmerLoading(
+                      baseColor: Colors.grey[200],
+                      highlightColor: Colors.grey[100],
+                      child: Container(
+                        width: 180,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class AnimatedListItem extends StatefulWidget {
   final Widget child;
   final int index;
+  final Duration delay;
 
   const AnimatedListItem({
     super.key,
     required this.child,
     required this.index,
+    this.delay = const Duration(milliseconds: 150),
   });
 
   @override
@@ -26,14 +28,17 @@ class _AnimatedListItemState extends State<AnimatedListItem>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
-    _animation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
+
+    _animation = CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeOut,
-    ));
-    _controller.forward(from: 0.0);
+      curve: Curves.easeOutQuad,
+    );
+
+    Future.delayed(widget.delay * widget.index, () {
+      if (mounted) {
+        _controller.forward();
+      }
+    });
   }
 
   @override
@@ -44,15 +49,16 @@ class _AnimatedListItemState extends State<AnimatedListItem>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _animation,
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0.5, 0.0),
-          end: Offset.zero,
-        ).animate(_animation),
-        child: widget.child,
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) => Transform.translate(
+        offset: Offset(0, (1 - _animation.value) * 50),
+        child: Opacity(
+          opacity: _animation.value,
+          child: child,
+        ),
       ),
+      child: widget.child,
     );
   }
 } 
