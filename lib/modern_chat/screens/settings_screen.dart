@@ -39,7 +39,92 @@ class SettingsScreen extends StatelessWidget {
                 title: 'Notifications',
                 subtitle: 'Message, group & call tones',
                 onTap: () {
-                  // Handle notifications
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (context) => Container(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 4,
+                            margin: const EdgeInsets.only(top: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Text(
+                              'Notification Settings',
+                              style: AppTextStyles.heading2.copyWith(fontSize: 20),
+                            ),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildNotificationOption(
+                                      'Message Notifications',
+                                      'Show notifications for new messages',
+                                      true,
+                                    ),
+                                    _buildNotificationOption(
+                                      'Group Notifications',
+                                      'Show notifications for group messages',
+                                      true,
+                                    ),
+                                    _buildNotificationOption(
+                                      'Call Notifications',
+                                      'Show notifications for incoming calls',
+                                      true,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _buildNotificationSound(
+                                      'Message Tone',
+                                      'Default (Note)',
+                                      Icons.music_note,
+                                    ),
+                                    _buildNotificationSound(
+                                      'Group Tone',
+                                      'Default (Chime)',
+                                      Icons.group,
+                                    ),
+                                    _buildNotificationSound(
+                                      'Call Ringtone',
+                                      'Default (Ring)',
+                                      Icons.call,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _buildNotificationOption(
+                                      'Vibrate',
+                                      'Vibrate for notifications',
+                                      true,
+                                    ),
+                                    _buildNotificationOption(
+                                      'High Priority',
+                                      'Show notifications on top',
+                                      false,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
               ),
               SettingsItem(
@@ -321,7 +406,156 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
                 onTap: () {
-                  // Handle wallpaper
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (context) => Container(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 4,
+                            margin: const EdgeInsets.only(top: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Text(
+                              'Chat Wallpaper',
+                              style: AppTextStyles.heading2.copyWith(fontSize: 20),
+                            ),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Default Wallpapers',
+                                      style: AppTextStyles.subtitle.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 120,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      itemCount: 8,
+                                      itemBuilder: (context, index) {
+                                        return Container(
+                                          width: 80,
+                                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(12),
+                                            image: DecorationImage(
+                                              image: NetworkImage(
+                                                'https://picsum.photos/200/300?random=$index',
+                                              ),
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              borderRadius: BorderRadius.circular(12),
+                                              onTap: () {
+                                                // Handle wallpaper selection
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Solid Colors',
+                                      style: AppTextStyles.subtitle.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    child: Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: [
+                                        Colors.blue,
+                                        Colors.green,
+                                        Colors.purple,
+                                        Colors.orange,
+                                        Colors.pink,
+                                        Colors.teal,
+                                        Colors.indigo,
+                                        Colors.amber,
+                                      ].map((color) => _buildColorOption(color)).toList(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  ListTile(
+                                    leading: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.image,
+                                        color: Colors.blue,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    title: const Text('Choose from Gallery'),
+                                    trailing: const Icon(Icons.chevron_right),
+                                    onTap: () {
+                                      // Handle gallery selection
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.red,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    title: const Text('Remove Wallpaper'),
+                                    trailing: const Icon(Icons.chevron_right),
+                                    onTap: () {
+                                      // Handle wallpaper removal
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
               ),
               SettingsItem(
@@ -443,7 +677,85 @@ class SettingsScreen extends StatelessWidget {
                 title: 'Network Usage',
                 subtitle: 'Data saver and proxy settings',
                 onTap: () {
-                  // Handle network
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (context) => Container(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 4,
+                            margin: const EdgeInsets.only(top: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Network Usage',
+                                  style: AppTextStyles.heading2.copyWith(fontSize: 20),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Data Usage: 1.2 GB this month',
+                                  style: AppTextStyles.subtitle.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                _buildNetworkOption(
+                                  'Data Saver',
+                                  'Reduce data usage for calls',
+                                  true,
+                                ),
+                                _buildNetworkOption(
+                                  'Use Proxy',
+                                  'Connect through proxy server',
+                                  false,
+                                ),
+                                const SizedBox(height: 16),
+                                _buildNetworkUsageItem('Mobile Data', '850 MB'),
+                                _buildNetworkUsageItem('Wi-Fi', '350 MB'),
+                                const SizedBox(height: 16),
+                                ListTile(
+                                  leading: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.cleaning_services_outlined,
+                                      color: Colors.blue,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  title: const Text('Clear Network Cache'),
+                                  subtitle: const Text('Free up 120 MB'),
+                                  trailing: const Icon(Icons.chevron_right),
+                                  onTap: () {
+                                    // Handle clear cache
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
               ),
             ],
@@ -457,14 +769,170 @@ class SettingsScreen extends StatelessWidget {
                 title: 'App Info',
                 subtitle: 'Version 1.0.0',
                 onTap: () {
-                  // Handle app info
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (context) => Container(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 4,
+                            margin: const EdgeInsets.only(top: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Text(
+                              'App Info',
+                              style: AppTextStyles.heading2.copyWith(fontSize: 20),
+                            ),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary.withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.chat_bubble_outline,
+                                        size: 50,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Modern Chat',
+                                      style: AppTextStyles.heading2.copyWith(fontSize: 24),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Version 1.0.0 (Build 100)',
+                                      style: AppTextStyles.subtitle,
+                                    ),
+                                    const SizedBox(height: 24),
+                                    _buildInfoItem('Developer', 'Your Company Name'),
+                                    _buildInfoItem('Released', 'January 1, 2024'),
+                                    _buildInfoItem('Size', '45.2 MB'),
+                                    _buildInfoItem('Language', 'English'),
+                                    const SizedBox(height: 24),
+                                    ListTile(
+                                      leading: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: const Icon(
+                                          Icons.update,
+                                          color: Colors.green,
+                                          size: 20,
+                                        ),
+                                      ),
+                                      title: const Text('Check for Updates'),
+                                      trailing: const Icon(Icons.chevron_right),
+                                      onTap: () {
+                                        // Handle update check
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
               ),
               SettingsItem(
                 icon: Icons.policy_outlined,
                 title: 'Privacy Policy',
                 onTap: () {
-                  // Handle privacy policy
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (context) => Container(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 4,
+                            margin: const EdgeInsets.only(top: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Text(
+                              'Privacy Policy',
+                              style: AppTextStyles.heading2.copyWith(fontSize: 20),
+                            ),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildPolicySection(
+                                      'Data Collection',
+                                      'We collect minimal personal information necessary to provide our services. This includes your name, email, and profile picture.',
+                                    ),
+                                    _buildPolicySection(
+                                      'Data Usage',
+                                      'Your data is used to enable messaging features, improve user experience, and maintain service quality.',
+                                    ),
+                                    _buildPolicySection(
+                                      'Data Protection',
+                                      'We implement industry-standard security measures to protect your data from unauthorized access.',
+                                    ),
+                                    _buildPolicySection(
+                                      'Third-Party Services',
+                                      'We may use third-party services for analytics and performance monitoring.',
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Last Updated: January 1, 2024',
+                                      style: AppTextStyles.subtitle.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
               ),
             ],
@@ -1107,6 +1575,169 @@ class SettingsScreen extends StatelessWidget {
               value = newValue;
             });
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNetworkOption(String title, String subtitle, bool value) {
+    return StatefulBuilder(
+      builder: (context, setState) => SwitchListTile(
+        title: Text(title),
+        subtitle: Text(
+          subtitle,
+          style: AppTextStyles.subtitle.copyWith(
+            color: AppColors.textSecondary,
+            fontSize: 13,
+          ),
+        ),
+        value: value,
+        activeColor: AppColors.primary,
+        onChanged: (newValue) {
+          setState(() {
+            value = newValue;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildNetworkUsageItem(String label, String usage) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          label == 'Mobile Data' ? Icons.signal_cellular_alt : Icons.wifi,
+          color: AppColors.primary,
+          size: 20,
+        ),
+      ),
+      title: Text(label),
+      trailing: Text(
+        usage,
+        style: AppTextStyles.subtitle.copyWith(
+          color: AppColors.textSecondary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationOption(String title, String subtitle, bool value) {
+    return StatefulBuilder(
+      builder: (context, setState) => SwitchListTile(
+        title: Text(title),
+        subtitle: Text(
+          subtitle,
+          style: AppTextStyles.subtitle.copyWith(
+            color: AppColors.textSecondary,
+            fontSize: 13,
+          ),
+        ),
+        value: value,
+        activeColor: AppColors.primary,
+        onChanged: (newValue) {
+          setState(() {
+            value = newValue;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildNotificationSound(String title, String value, IconData icon) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          icon,
+          color: AppColors.primary,
+          size: 20,
+        ),
+      ),
+      title: Text(title),
+      subtitle: Text(
+        value,
+        style: AppTextStyles.subtitle.copyWith(
+          color: AppColors.textSecondary,
+          fontSize: 13,
+        ),
+      ),
+      trailing: const Icon(
+        Icons.chevron_right,
+        color: AppColors.textSecondary,
+      ),
+      onTap: () {
+        // Handle sound selection
+      },
+    );
+  }
+
+  Widget _buildInfoItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.subtitle.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          Text(
+            value,
+            style: AppTextStyles.subtitle.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPolicySection(String title, String content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: AppTextStyles.heading2.copyWith(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          content,
+          style: AppTextStyles.subtitle.copyWith(
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildColorOption(Color color) {
+    return InkWell(
+      onTap: () {
+        // Handle color selection
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );
