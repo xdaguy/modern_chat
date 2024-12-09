@@ -7,8 +7,36 @@ import 'package:modern_chat/modern_chat/screens/chat_detail_screen.dart';
 import 'package:modern_chat/modern_chat/models/chat_user.dart';
 import 'package:modern_chat/modern_chat/screens/profile_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<ChatUser> filteredUsers = [];
+  String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    filteredUsers = List.from(sampleUsers);
+  }
+
+  void _handleSearch(String query) {
+    setState(() {
+      searchQuery = query.toLowerCase();
+      if (query.isEmpty) {
+        filteredUsers = List.from(sampleUsers);
+      } else {
+        filteredUsers = sampleUsers.where((user) {
+          return user.name.toLowerCase().contains(searchQuery) ||
+              user.lastMessage.toLowerCase().contains(searchQuery);
+        }).toList();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +94,23 @@ class HomeScreen extends StatelessWidget {
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                padding: const EdgeInsets.all(8),
-                child: const Icon(
-                  Icons.search,
-                  color: Colors.white,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 40,
+                    minHeight: 40,
+                  ),
+                  onPressed: () {
+                    showSearch(
+                      context: context,
+                      delegate: ChatSearchDelegate(users: sampleUsers),
+                    );
+                  },
                 ),
               ),
               const SizedBox(width: 12),
@@ -78,9 +119,64 @@ class HomeScreen extends StatelessWidget {
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                padding: const EdgeInsets.all(8),
                 child: PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert, color: Colors.white),
+                  icon: const Icon(
+                    Icons.filter_list,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 40,
+                    minHeight: 40,
+                  ),
+                  offset: const Offset(0, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  onSelected: (value) {
+                    setState(() {
+                      switch (value) {
+                        case 'all_chats':
+                          filteredUsers = List.from(sampleUsers);
+                          break;
+                        case 'unread':
+                          filteredUsers = sampleUsers.where((user) => user.unreadCount > 0).toList();
+                          break;
+                        case 'groups':
+                          // Add group filtering logic
+                          break;
+                        case 'archived':
+                          // Add archived filtering logic
+                          break;
+                      }
+                    });
+                  },
+                  itemBuilder: (context) => [
+                    _buildFilterItem('All Chats', Icons.chat),
+                    _buildFilterItem('Unread', Icons.mark_chat_unread),
+                    _buildFilterItem('Groups', Icons.group),
+                    _buildFilterItem('Archived', Icons.archive),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: PopupMenuButton<String>(
+                  icon: const Icon(
+                    Icons.more_vert,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 40,
+                    minHeight: 40,
+                  ),
                   offset: const Offset(0, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -181,15 +277,38 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildChatList() {
-    final pinnedUsers = sampleUsers.where((user) => user.isPinned).toList();
-    final regularUsers = sampleUsers.where((user) => !user.isPinned).toList();
-
+    final pinnedUsers = filteredUsers.where((user) => user.isPinned).toList();
+    final regularUsers = filteredUsers.where((user) => !user.isPinned).toList();
+    
     return CustomScrollView(
       slivers: [
         if (pinnedUsers.isNotEmpty)
           SliverToBoxAdapter(
             child: _PinnedChatsSection(users: pinnedUsers),
           ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Text(
+                  searchQuery.isEmpty ? 'Recent Chats' : 'Search Results',
+                  style: AppTextStyles.subtitle,
+                ),
+                const Spacer(),
+                if (searchQuery.isEmpty)
+                  TextButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.sort, size: 20),
+                    label: const Text('Sort'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.textSecondary,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) => _buildChatTile(context, regularUsers[index]),
@@ -639,6 +758,82 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildSwipeableChat(BuildContext context, ChatUser user) {
+    return Dismissible(
+      key: Key(user.id),
+      background: _buildSwipeBackground(
+        alignment: Alignment.centerLeft,
+        color: Colors.blue,
+        icon: Icons.archive,
+        label: 'Archive',
+      ),
+      secondaryBackground: _buildSwipeBackground(
+        alignment: Alignment.centerRight,
+        color: Colors.red,
+        icon: Icons.delete,
+        label: 'Delete',
+      ),
+      onDismissed: (direction) {
+        // Handle swipe actions
+      },
+      child: _buildChatTile(context, user),
+    );
+  }
+
+  Widget _buildSwipeBackground({
+    required Alignment alignment,
+    required Color color,
+    required IconData icon,
+    required String label,
+  }) {
+    return Container(
+      color: color,
+      child: Align(
+        alignment: alignment,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: Colors.white),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _buildFilterItem(String title, IconData icon) {
+    return PopupMenuItem(
+      value: title.toLowerCase(),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: AppTextStyles.subtitle.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _PinnedChatsSection extends StatelessWidget {
@@ -830,6 +1025,92 @@ class _PinnedChatItem extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ChatSearchDelegate extends SearchDelegate<String> {
+  final List<ChatUser> users;
+
+  ChatSearchDelegate({required this.users});
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.primary,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      inputDecorationTheme: const InputDecorationTheme(
+        hintStyle: TextStyle(color: Colors.white70),
+      ),
+      textTheme: const TextTheme(
+        titleLarge: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      if (query.isNotEmpty)
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () => query = '',
+        ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () => close(context, ''),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return _buildSearchResults();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return _buildSearchResults();
+  }
+
+  Widget _buildSearchResults() {
+    final filteredUsers = users.where((user) {
+      return user.name.toLowerCase().contains(query.toLowerCase()) ||
+          user.lastMessage.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    return ListView.builder(
+      itemCount: filteredUsers.length,
+      itemBuilder: (context, index) {
+        final user = filteredUsers[index];
+        return ListTile(
+          leading: UserAvatar(
+            imageUrl: user.avatarUrl,
+            isOnline: user.isOnline,
+          ),
+          title: Text(user.name),
+          subtitle: Text(
+            user.lastMessage,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          onTap: () {
+            close(context, user.id);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatDetailScreen(user: user),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 } 
