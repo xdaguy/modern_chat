@@ -7,12 +7,14 @@ class UserAvatar extends StatelessWidget {
   final String? imageUrl;
   final bool isOnline;
   final double size;
+  final double borderWidth;
 
   const UserAvatar({
     super.key,
     this.imageUrl,
     this.isOnline = false,
     this.size = 40,
+    this.borderWidth = 0,
   });
 
   @override
