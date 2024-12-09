@@ -19,13 +19,15 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   List<ChatUser> filteredUsers = [];
   String searchQuery = '';
   bool _isLoading = true;
   bool _isRefreshing = false;
   List<Story> _stories = [];
   List<Call> _calls = [];
+  late TabController _tabController;
+  int _currentTabIndex = 0;
 
   @override
   void initState() {
@@ -33,6 +35,20 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadData();
     _stories = List.from(sampleStories);
     _calls = List.from(sampleCalls);
+    
+    // Initialize TabController
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _currentTabIndex = _tabController.index;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -62,20 +78,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: _buildAppBar(),
-        body: TabBarView(
-          children: [
-            _buildChatList(),
-            _buildStatusList(),
-            _buildCallsList(),
-          ],
-        ),
-        floatingActionButton: _buildFloatingActionButton(context),
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: _buildAppBar(),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildChatList(),
+          _buildStatusList(),
+          _buildCallsList(),
+        ],
       ),
+      floatingActionButton: _buildFloatingActionButton(context),
     );
   }
 
@@ -220,6 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 50,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: TabBar(
+            controller: _tabController,
             indicatorSize: TabBarIndicatorSize.label,
             indicatorColor: Colors.white,
             indicatorWeight: 3,
@@ -497,37 +512,73 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFloatingActionButton(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: animation,
+            child: child,
           ),
-        ],
-      ),
-      child: FloatingActionButton.extended(
-        backgroundColor: AppColors.primary,
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => _buildQuickActionsSheet(),
-          );
-        },
-        icon: const Icon(Icons.add, size: 20),
-        label: const Text(
-          'New Chat',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+        );
+      },
+      child: _buildFABForCurrentTab(context),
     );
+  }
+
+  Widget _buildFABForCurrentTab(BuildContext context) {
+    switch (_currentTabIndex) {
+      case 0: // Chats tab
+        return Container(
+          key: const ValueKey('chat_fab'),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: FloatingActionButton(
+            backgroundColor: AppColors.primary,
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => _buildQuickActionsSheet(),
+              );
+            },
+            child: const Icon(Icons.chat_bubble_outline),
+          ),
+        );
+
+      case 1: // Status tab
+        return FloatingActionButton(
+          key: const ValueKey('status_fab'),
+          backgroundColor: AppColors.primary,
+          onPressed: () {
+            // Handle add status
+          },
+          child: const Icon(Icons.camera_alt),
+        );
+
+      case 2: // Calls tab
+        return FloatingActionButton(
+          key: const ValueKey('calls_fab'),
+          backgroundColor: AppColors.primary,
+          onPressed: () {
+            // Handle new call
+          },
+          child: const Icon(Icons.add_call),
+        );
+
+      default:
+        return const SizedBox.shrink();
+    }
   }
 
   Widget _buildQuickActionsSheet() {
@@ -785,90 +836,99 @@ class _HomeScreenState extends State<HomeScreen> {
       return _buildLoadingState();
     }
 
+    final recentCalls = _calls.where((call) => 
+      call.timestamp.isAfter(DateTime.now().subtract(const Duration(days: 7)))
+    ).toList();
+
+    final olderCalls = _calls.where((call) => 
+      !call.timestamp.isAfter(DateTime.now().subtract(const Duration(days: 7)))
+    ).toList();
+
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                leading: Container(
-                  width: 56,
-                  height: 56,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Recent',
+                        style: AppTextStyles.subtitle.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.link,
-                    color: Colors.white,
-                    size: 24,
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: Icon(
+                    Icons.add_call,
+                    color: AppColors.primary,
                   ),
+                  onPressed: () {
+                    // Handle new call
+                  },
                 ),
-                title: Text(
-                  'Create call link',
-                  style: AppTextStyles.heading2.copyWith(fontSize: 16),
-                ),
-                subtitle: const Text(
-                  'Share a link for your call',
-                  style: AppTextStyles.subtitle,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.access_time,
-                            size: 16,
-                            color: AppColors.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Recent',
-                            style: AppTextStyles.subtitle.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final call = _calls[index];
-              final user = sampleUsers.firstWhere((u) => u.id == call.userId);
-              return _buildCallTile(user, call);
-            },
-            childCount: _calls.length,
+        if (recentCalls.isNotEmpty) ...[
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final call = recentCalls[index];
+                final user = sampleUsers.firstWhere((u) => u.id == call.userId);
+                return _buildCallTile(user, call);
+              },
+              childCount: recentCalls.length,
+            ),
           ),
-        ),
+        ],
+        if (olderCalls.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+              child: Text(
+                'Older',
+                style: AppTextStyles.subtitle.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final call = olderCalls[index];
+                final user = sampleUsers.firstWhere((u) => u.id == call.userId);
+                return _buildCallTile(user, call);
+              },
+              childCount: olderCalls.length,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -877,10 +937,32 @@ class _HomeScreenState extends State<HomeScreen> {
     final timeAgo = _getTimeAgo(call.timestamp);
     
     return ListTile(
-      leading: UserAvatar(
-        imageUrl: user.avatarUrl,
-        size: 56,
-        isOnline: user.isOnline,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: Stack(
+        children: [
+          UserAvatar(
+            imageUrl: user.avatarUrl,
+            size: 56,
+            isOnline: user.isOnline,
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: call.type == CallType.video ? Colors.blue : Colors.green,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: Icon(
+                call.type == CallType.video ? Icons.videocam : Icons.call,
+                color: Colors.white,
+                size: 12,
+              ),
+            ),
+          ),
+        ],
       ),
       title: Text(
         user.name,
@@ -907,7 +989,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           if (call.duration > 0) ...[
-            const Text(' • '),
+            Text(
+              ' • ',
+              style: AppTextStyles.subtitle.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
             Text(
               _formatDuration(call.duration),
               style: AppTextStyles.subtitle.copyWith(
