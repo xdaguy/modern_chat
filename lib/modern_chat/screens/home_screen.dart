@@ -8,6 +8,9 @@ import 'package:modern_chat/modern_chat/models/chat_user.dart';
 import 'package:modern_chat/modern_chat/screens/profile_screen.dart';
 import 'package:modern_chat/modern_chat/widgets/animated_list_item.dart';
 import 'package:modern_chat/modern_chat/widgets/shimmer_loading.dart';
+import 'package:modern_chat/modern_chat/models/story.dart';
+import 'package:modern_chat/modern_chat/screens/status_view_screen.dart';
+import 'package:modern_chat/modern_chat/models/call.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,11 +24,15 @@ class _HomeScreenState extends State<HomeScreen> {
   String searchQuery = '';
   bool _isLoading = true;
   bool _isRefreshing = false;
+  List<Story> _stories = [];
+  List<Call> _calls = [];
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _stories = List.from(sampleStories);
+    _calls = List.from(sampleCalls);
   }
 
   Future<void> _loadData() async {
@@ -624,6 +631,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildStatusList() {
+    if (_isLoading) {
+      return _buildLoadingState();
+    }
+
+    final recentStories = _stories
+        .where((story) =>
+            story.timestamp.isAfter(DateTime.now().subtract(const Duration(hours: 24))))
+        .toList();
+
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -631,11 +647,46 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildMyStatus(),
-              const Padding(
-                padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text(
-                  'Recent Updates',
-                  style: AppTextStyles.subtitle,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.update,
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Recent Updates',
+                            style: AppTextStyles.subtitle.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${recentStories.length} new',
+                      style: AppTextStyles.subtitle.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -643,8 +694,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) => _buildStatusTile(),
-            childCount: 10,
+            (context, index) {
+              final story = recentStories[index];
+              final user = sampleUsers.firstWhere((u) => u.id == story.userId);
+              return _buildStatusTile(user, story);
+            },
+            childCount: recentStories.length,
           ),
         ),
       ],
@@ -671,32 +726,41 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatusTile() {
+  Widget _buildStatusTile(ChatUser user, Story story) {
+    final timeAgo = _getTimeAgo(story.timestamp);
+    
     return ListTile(
       onTap: () {
-        // Navigate to status view screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StatusViewScreen(user: user, story: story),
+          ),
+        );
       },
-      leading: const StoryRing(
+      leading: StoryRing(
         size: 56,
-        isViewed: false,
+        imageUrl: user.avatarUrl,
+        isViewed: story.isViewed,
       ),
       title: Text(
-        'Jane Smith',
+        user.name,
         style: AppTextStyles.heading2.copyWith(fontSize: 16),
       ),
       subtitle: Row(
         children: [
-          Container(
-            width: 8,
-            height: 8,
-            margin: const EdgeInsets.only(right: 6),
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
+          if (!story.isViewed)
+            Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(right: 6),
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
             ),
-          ),
-          const Text(
-            '2 minutes ago',
+          Text(
+            timeAgo,
             style: AppTextStyles.subtitle,
           ),
         ],
@@ -704,7 +768,23 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  String _getTimeAgo(DateTime dateTime) {
+    final difference = DateTime.now().difference(dateTime);
+    
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} minutes ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} hours ago';
+    } else {
+      return 'Yesterday';
+    }
+  }
+
   Widget _buildCallsList() {
+    if (_isLoading) {
+      return _buildLoadingState();
+    }
+
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -715,9 +795,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: Container(
                   width: 56,
                   height: 56,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: const Icon(
                     Icons.link,
@@ -730,15 +817,43 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: AppTextStyles.heading2.copyWith(fontSize: 16),
                 ),
                 subtitle: const Text(
-                  'Share a link for your WhatsApp call',
+                  'Share a link for your call',
                   style: AppTextStyles.subtitle,
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text(
-                  'Recent',
-                  style: AppTextStyles.subtitle,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Recent',
+                            style: AppTextStyles.subtitle.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -746,47 +861,79 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) => _buildCallTile(),
-            childCount: 10,
+            (context, index) {
+              final call = _calls[index];
+              final user = sampleUsers.firstWhere((u) => u.id == call.userId);
+              return _buildCallTile(user, call);
+            },
+            childCount: _calls.length,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildCallTile() {
+  Widget _buildCallTile(ChatUser user, Call call) {
+    final timeAgo = _getTimeAgo(call.timestamp);
+    
     return ListTile(
-      leading: const UserAvatar(size: 56),
+      leading: UserAvatar(
+        imageUrl: user.avatarUrl,
+        size: 56,
+        isOnline: user.isOnline,
+      ),
       title: Text(
-        'Alice Johnson',
+        user.name,
         style: AppTextStyles.heading2.copyWith(fontSize: 16),
       ),
       subtitle: Row(
         children: [
-          const Icon(
-            Icons.call_made,
+          Icon(
+            call.status == CallStatus.incoming
+                ? Icons.call_received
+                : call.status == CallStatus.outgoing
+                    ? Icons.call_made
+                    : Icons.call_missed,
             size: 16,
-            color: Colors.green,
+            color: call.status == CallStatus.missed
+                ? Colors.red
+                : Colors.green,
           ),
           const SizedBox(width: 4),
           Text(
-            'Today, 14:26',
+            timeAgo,
             style: AppTextStyles.subtitle.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
+          if (call.duration > 0) ...[
+            const Text(' • '),
+            Text(
+              _formatDuration(call.duration),
+              style: AppTextStyles.subtitle.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
         ],
       ),
       trailing: IconButton(
-        icon: const Icon(
-          Icons.videocam,
+        icon: Icon(
+          call.type == CallType.video ? Icons.videocam : Icons.call,
           color: AppColors.primary,
         ),
         onPressed: () {
-          // Handle video call
+          // Handle call
         },
       ),
     );
+  }
+
+  String _formatDuration(int seconds) {
+    final duration = Duration(seconds: seconds);
+    final minutes = duration.inMinutes;
+    final remainingSeconds = duration.inSeconds - minutes * 60;
+    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   Widget _buildSwipeableChat(BuildContext context, ChatUser user) {
