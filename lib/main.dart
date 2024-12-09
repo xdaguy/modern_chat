@@ -62,7 +62,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const HomeScreen(),
-        '/chat_detail': (context) => const ChatDetailScreen(),
         '/status_view': (context) => const StatusViewScreen(),
       },
     );

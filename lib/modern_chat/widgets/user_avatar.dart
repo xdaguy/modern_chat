@@ -16,47 +16,26 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.secondaryBackground,
-            image: imageUrl != null
-                ? DecorationImage(
-                    image: NetworkImage(imageUrl!),
-                    fit: BoxFit.cover,
-                  )
-                : null,
-          ),
-          child: imageUrl == null
-              ? Icon(
-                  Icons.person,
-                  size: size * 0.6,
-                  color: AppColors.textSecondary,
-                )
-              : null,
-        ),
-        if (isOnline)
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: Container(
-              width: size * 0.3,
-              height: size * 0.3,
-              decoration: BoxDecoration(
-                color: AppColors.online,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.background,
-                  width: 2,
-                ),
-              ),
-            ),
-          ),
-      ],
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.secondaryBackground,
+        image: imageUrl != null
+            ? DecorationImage(
+                image: NetworkImage(imageUrl!),
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+      child: imageUrl == null
+          ? Icon(
+              Icons.person,
+              size: size * 0.6,
+              color: AppColors.textSecondary,
+            )
+          : null,
     );
   }
 } 

@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:modern_chat/modern_chat/models/chat_message.dart';
+import 'package:modern_chat/modern_chat/models/chat_user.dart';
 import 'package:modern_chat/modern_chat/theme/app_colors.dart';
 import 'package:modern_chat/modern_chat/theme/app_text_styles.dart';
 import 'package:modern_chat/modern_chat/widgets/chat_bubble.dart';
 import 'package:modern_chat/modern_chat/widgets/message_input.dart';
 import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
+import 'package:modern_chat/modern_chat/screens/profile_screen.dart';
 
 class ChatDetailScreen extends StatefulWidget {
-  const ChatDetailScreen({super.key});
+  final ChatUser user;
+
+  const ChatDetailScreen({
+    super.key,
+    required this.user,
+  });
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -19,36 +26,199 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _showScrollToBottom = false;
   bool _isAttachmentVisible = false;
-
-  final List<ChatMessage> _messages = [
-    // Sample messages for UI demonstration
-    ChatMessage(
-      id: '1',
-      message: 'Hey! How are you?',
-      senderId: '1',
-      receiverId: '2',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
-    ),
-    ChatMessage(
-      id: '2',
-      message: 'I\'m good, thanks! How about you?',
-      senderId: '2',
-      receiverId: '1',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 4)),
-    ),
-    ChatMessage(
-      id: '3',
-      message: 'I\'m doing great! Working on a new project.',
-      senderId: '1',
-      receiverId: '2',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 3)),
-    ),
-  ];
+  late List<ChatMessage> _messages;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
+    _messages = _getMessagesForUser(widget.user.id);
+  }
+
+  List<ChatMessage> _getMessagesForUser(String userId) {
+    switch (userId) {
+      case '1': // Emma Watson
+        return [
+          ChatMessage(
+            id: '1',
+            message: "Hey! I just reviewed the latest UI designs 🎨",
+            senderId: '1',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
+          ),
+          ChatMessage(
+            id: '2',
+            message: "What do you think about the color scheme?",
+            senderId: '1',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
+          ),
+          ChatMessage(
+            id: '3',
+            message: "I love it! The new palette looks much more modern",
+            senderId: 'me',
+            receiverId: '1',
+            timestamp: DateTime.now().subtract(const Duration(days: 1, hours: 1)),
+          ),
+          ChatMessage(
+            id: '4',
+            message: "Great! I'll prepare the presentation for tomorrow then 📊",
+            senderId: '1',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(days: 1, hours: 1)),
+          ),
+        ];
+
+      case '2': // James Rodriguez
+        return [
+          ChatMessage(
+            id: '1',
+            message: "Did you get a chance to check the code review? 💻",
+            senderId: '2',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(hours: 5)),
+          ),
+          ChatMessage(
+            id: '2',
+            message: "Yes, just finished. Great work on the optimization!",
+            senderId: 'me',
+            receiverId: '2',
+            timestamp: DateTime.now().subtract(const Duration(hours: 4)),
+          ),
+          ChatMessage(
+            id: '3',
+            message: "Thanks! I'll deploy it to staging now",
+            senderId: '2',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(hours: 4)),
+          ),
+        ];
+
+      case '3': // Sophia Chen
+        return [
+          ChatMessage(
+            id: '1',
+            message: "Meeting in 30 minutes! 🕐",
+            senderId: '3',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(minutes: 45)),
+          ),
+          ChatMessage(
+            id: '2',
+            message: "I'll prepare the demo",
+            senderId: 'me',
+            receiverId: '3',
+            timestamp: DateTime.now().subtract(const Duration(minutes: 40)),
+          ),
+          ChatMessage(
+            id: '3',
+            message: "Perfect! Don't forget to include the new features",
+            senderId: '3',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(minutes: 35)),
+          ),
+          ChatMessage(
+            id: '4',
+            message: "Got it covered! See you soon 👍",
+            senderId: 'me',
+            receiverId: '3',
+            timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
+          ),
+        ];
+
+      case '4': // Marcus Johnson
+        return [
+          ChatMessage(
+            id: '1',
+            message: "The client loved our proposal! 🎉",
+            senderId: '4',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(hours: 1)),
+          ),
+          ChatMessage(
+            id: '2',
+            message: "That's fantastic news! When do we start?",
+            senderId: 'me',
+            receiverId: '4',
+            timestamp: DateTime.now().subtract(const Duration(minutes: 55)),
+          ),
+          ChatMessage(
+            id: '3',
+            message: "Next week! I'll send the schedule shortly",
+            senderId: '4',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(minutes: 50)),
+          ),
+        ];
+
+      case '5': // Isabella Martinez
+        return [
+          ChatMessage(
+            id: '1',
+            message: "How's the new feature coming along? 🛠️",
+            senderId: '5',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(hours: 3)),
+          ),
+          ChatMessage(
+            id: '2',
+            message: "Almost done! Just fixing some minor bugs",
+            senderId: 'me',
+            receiverId: '5',
+            timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+          ),
+          ChatMessage(
+            id: '3',
+            message: "Great progress! Need any help?",
+            senderId: '5',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+          ),
+        ];
+
+      case '6': // Alexander White
+        return [
+          ChatMessage(
+            id: '1',
+            message: "Team lunch today? 🍕",
+            senderId: '6',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(hours: 4)),
+          ),
+          ChatMessage(
+            id: '2',
+            message: "Count me in! Where are we going?",
+            senderId: 'me',
+            receiverId: '6',
+            timestamp: DateTime.now().subtract(const Duration(hours: 3)),
+          ),
+          ChatMessage(
+            id: '3',
+            message: "The new Italian place downtown, 1 PM?",
+            senderId: '6',
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(hours: 3)),
+          ),
+        ];
+
+      default:
+        return [
+          ChatMessage(
+            id: '1',
+            message: "Hi there! 👋",
+            senderId: userId,
+            receiverId: 'me',
+            timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
+          ),
+          ChatMessage(
+            id: '2',
+            message: "Hello! How can I help you?",
+            senderId: 'me',
+            receiverId: userId,
+            timestamp: DateTime.now().subtract(const Duration(minutes: 25)),
+          ),
+        ];
+    }
   }
 
   void _scrollListener() {
@@ -108,7 +278,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         final message = _messages[index];
                         return ChatBubble(
                           message: message.message,
-                          isSent: message.senderId == '1',
+                          isSent: message.senderId == 'me',
                           timestamp: message.timestamp,
                         );
                       },
@@ -153,36 +323,45 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         icon: const Icon(Icons.arrow_back, color: Colors.white),
         onPressed: () => Navigator.pop(context),
       ),
-      title: Row(
-        children: [
-          const UserAvatar(
-            size: 40,
-            isOnline: true,
+      title: GestureDetector(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfileScreen(user: widget.user),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'John Doe',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'online',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+        ),
+        child: Row(
+          children: [
+            UserAvatar(
+              imageUrl: widget.user.avatarUrl,
+              isOnline: widget.user.isOnline,
+              size: 40,
             ),
-          ),
-        ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.user.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    widget.user.isOnline ? 'online' : 'offline',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         IconButton(
@@ -282,8 +461,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           ChatMessage(
             id: DateTime.now().toString(),
             message: _messageController.text,
-            senderId: '1',
-            receiverId: '2',
+            senderId: 'me',
+            receiverId: widget.user.id,
             timestamp: DateTime.now(),
           ),
         );

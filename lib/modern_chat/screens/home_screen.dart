@@ -4,6 +4,8 @@ import 'package:modern_chat/modern_chat/theme/app_text_styles.dart';
 import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
 import 'package:modern_chat/modern_chat/widgets/story_ring.dart';
 import 'package:modern_chat/modern_chat/screens/chat_detail_screen.dart';
+import 'package:modern_chat/modern_chat/models/chat_user.dart';
+import 'package:modern_chat/modern_chat/screens/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -179,27 +181,31 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildChatList() {
+    final pinnedUsers = sampleUsers.where((user) => user.isPinned).toList();
+    final regularUsers = sampleUsers.where((user) => !user.isPinned).toList();
+
     return CustomScrollView(
       slivers: [
-        const SliverToBoxAdapter(
-          child: _PinnedChatsSection(),
-        ),
+        if (pinnedUsers.isNotEmpty)
+          SliverToBoxAdapter(
+            child: _PinnedChatsSection(users: pinnedUsers),
+          ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) => _buildChatTile(context),
-            childCount: 15,
+            (context, index) => _buildChatTile(context, regularUsers[index]),
+            childCount: regularUsers.length,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildChatTile(BuildContext context) {
+  Widget _buildChatTile(BuildContext context, ChatUser user) {
     return InkWell(
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const ChatDetailScreen(),
+          builder: (context) => ChatDetailScreen(user: user),
         ),
       ),
       child: Container(
@@ -218,38 +224,48 @@ class HomeScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColors.primary.withOpacity(0.1),
-                      width: 2,
-                    ),
-                  ),
-                  child: const UserAvatar(
-                    isOnline: true,
-                    size: 60,
-                  ),
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(user: user),
                 ),
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    width: 18,
-                    height: 18,
+              ),
+              child: Stack(
+                children: [
+                  Container(
                     decoration: BoxDecoration(
-                      color: AppColors.online,
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.white,
+                        color: AppColors.primary.withOpacity(0.1),
                         width: 2,
                       ),
                     ),
+                    child: UserAvatar(
+                      imageUrl: user.avatarUrl,
+                      isOnline: user.isOnline,
+                      size: 60,
+                    ),
                   ),
-                ),
-              ],
+                  if (user.isOnline)
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: AppColors.online,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -259,7 +275,7 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'John Doe',
+                        user.name,
                         style: AppTextStyles.heading2.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -267,7 +283,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        '12:30',
+                        user.lastMessageTime,
                         style: AppTextStyles.subtitle.copyWith(
                           fontSize: 12,
                           color: AppColors.textSecondary,
@@ -286,7 +302,7 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          'Hey! How are you doing?',
+                          user.lastMessage,
                           style: AppTextStyles.subtitle.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -294,7 +310,7 @@ class HomeScreen extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (true)
+                      if (user.unreadCount > 0)
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -305,7 +321,7 @@ class HomeScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            '2',
+                            user.unreadCount.toString(),
                             style: AppTextStyles.subtitle.copyWith(
                               color: AppColors.primary,
                               fontSize: 12,
@@ -325,45 +341,136 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildFloatingActionButton(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: AppColors.primary,
-      child: const Icon(Icons.message),
-      onPressed: () {
-        // Show bottom sheet with quick actions
-        showModalBottomSheet(
-          context: context,
-          builder: (context) => _buildQuickActionsSheet(),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
-        );
-      },
+        ],
+      ),
+      child: FloatingActionButton.extended(
+        backgroundColor: AppColors.primary,
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => _buildQuickActionsSheet(),
+          );
+        },
+        icon: const Icon(Icons.add, size: 20),
+        label: const Text(
+          'New Chat',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildQuickActionsSheet() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _QuickActionTile(
-            icon: Icons.message,
-            title: 'New Chat',
-            onTap: () {},
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(top: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
-          _QuickActionTile(
-            icon: Icons.group_add,
-            title: 'New Group',
-            onTap: () {},
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Start a conversation',
+                  style: AppTextStyles.heading2.copyWith(fontSize: 20),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Choose how you want to start',
+                  style: AppTextStyles.subtitle,
+                ),
+                const SizedBox(height: 24),
+                _buildQuickActionGrid(),
+              ],
+            ),
           ),
-          _QuickActionTile(
-            icon: Icons.broadcast_on_personal,
-            title: 'New Broadcast',
-            onTap: () {},
-          ),
+          const SizedBox(height: 24),
         ],
       ),
+    );
+  }
+
+  Widget _buildQuickActionGrid() {
+    return GridView.count(
+      shrinkWrap: true,
+      crossAxisCount: 3,
+      mainAxisSpacing: 16,
+      crossAxisSpacing: 16,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        _buildQuickActionItem(
+          Icons.message,
+          'New Chat',
+          Colors.blue,
+        ),
+        _buildQuickActionItem(
+          Icons.group_add,
+          'New Group',
+          Colors.green,
+        ),
+        _buildQuickActionItem(
+          Icons.broadcast_on_personal,
+          'Broadcast',
+          Colors.orange,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionItem(IconData icon, String label, Color color) {
+    return Column(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 28,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: AppTextStyles.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 
@@ -535,80 +642,194 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _PinnedChatsSection extends StatelessWidget {
-  const _PinnedChatsSection();
+  final List<ChatUser> users;
+
+  const _PinnedChatsSection({required this.users});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            'Pinned Chats',
-            style: AppTextStyles.subtitle,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.push_pin,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Pinned',
+                      style: AppTextStyles.subtitle.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  'See all',
+                  style: AppTextStyles.subtitle.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         SizedBox(
-          height: 100,
+          height: 110,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            itemCount: 5,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            itemCount: users.length,
             itemBuilder: (context, index) {
-              return _PinnedChatItem(index: index);
+              return _PinnedChatItem(user: users[index]);
             },
           ),
         ),
-        const Divider(),
+        const SizedBox(height: 16),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.filter_list,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Filter conversations',
+                style: AppTextStyles.subtitle.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '3',
+                  style: AppTextStyles.subtitle.copyWith(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
       ],
     );
   }
 }
 
 class _PinnedChatItem extends StatelessWidget {
-  final int index;
+  final ChatUser user;
 
-  const _PinnedChatItem({required this.index});
+  const _PinnedChatItem({required this.user});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 72,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        children: [
-          const UserAvatar(size: 56),
-          const SizedBox(height: 4),
-          Text(
-            'Contact ${index + 1}',
-            style: AppTextStyles.subtitle.copyWith(fontSize: 12),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatDetailScreen(user: user),
+        ),
       ),
-    );
-  }
-}
-
-class _QuickActionTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-
-  const _QuickActionTile({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: AppColors.primary),
-      title: Text(title),
-      onTap: onTap,
+      child: Container(
+        width: 80,
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(user: user),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacity(0.1),
+                    width: 2,
+                  ),
+                ),
+                child: UserAvatar(
+                  imageUrl: user.avatarUrl,
+                  isOnline: user.isOnline,
+                  size: 60,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                user.name,
+                style: AppTextStyles.subtitle.copyWith(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 } 
