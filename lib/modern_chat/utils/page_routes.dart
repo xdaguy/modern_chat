@@ -32,16 +32,14 @@ class FadePageRoute<T> extends PageRouteBuilder<T> {
 class SlidePageRoute<T> extends PageRouteBuilder<T> {
   final Widget child;
   final SlideDirection direction;
-  final Duration duration;
-  final Curve curve;
 
   SlidePageRoute({
     required this.child,
     this.direction = SlideDirection.right,
-    this.duration = const Duration(milliseconds: 300),
-    this.curve = Curves.easeOut,
   }) : super(
           pageBuilder: (context, animation, secondaryAnimation) => child,
+          transitionDuration: const Duration(milliseconds: 300),
+          reverseTransitionDuration: const Duration(milliseconds: 300),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             Offset begin;
             switch (direction) {
@@ -58,22 +56,30 @@ class SlidePageRoute<T> extends PageRouteBuilder<T> {
                 begin = const Offset(0.0, -1.0);
                 break;
             }
+                
+            var curve = Curves.easeInOutCubic;
+            var tween = Tween(begin: begin, end: Offset.zero)
+                .chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+
+            var fadeAnimation = Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: const Interval(0.0, 0.5),
+              ),
+            );
 
             return SlideTransition(
-              position: Tween<Offset>(
-                begin: begin,
-                end: Offset.zero,
-              ).animate(
-                CurvedAnimation(
-                  parent: animation,
-                  curve: curve,
-                ),
+              position: offsetAnimation,
+              child: FadeTransition(
+                opacity: fadeAnimation,
+                child: child,
               ),
-              child: child,
             );
           },
-          transitionDuration: duration,
-          reverseTransitionDuration: duration,
         );
 }
 
