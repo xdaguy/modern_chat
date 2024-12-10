@@ -9,6 +9,7 @@ import 'package:modern_chat/modern_chat/widgets/chat_bubble.dart';
 import 'package:modern_chat/modern_chat/widgets/message_input.dart';
 import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
 import 'package:modern_chat/modern_chat/screens/profile_screen.dart';
+import 'package:modern_chat/modern_chat/screens/shared_content_screen.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final ChatUser user;
@@ -302,35 +303,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
               Expanded(
                 child: Stack(
                   children: [
-                    ListView.builder(
-                      controller: _scrollController,
-                      reverse: true,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      itemCount: _messages.length,
-                      itemBuilder: (context, index) {
-                        final message = _messages[index];
-                        return Dismissible(
-                          key: Key(message.id),
-                          direction: message.senderId == 'me'
-                              ? DismissDirection.endToStart
-                              : DismissDirection.startToEnd,
-                          background: _buildSwipeBackground(message.senderId == 'me'),
-                          confirmDismiss: (direction) async {
-                            return false;
-                          },
-                          child: ChatBubble(
-                            message: message.message,
-                            isSent: message.senderId == 'me',
-                            timestamp: message.timestamp,
-                            isRead: message.isRead,
-                            reactions: const [],
-                            onReactionTap: (emoji) {},
-                            onLongPress: () {},
-                            onDoubleTap: () {},
-                          ),
-                        );
-                      },
-                    ),
+                    _buildMessageList(),
                     if (_showScrollToBottom)
                       Positioned(
                         right: 16,
@@ -363,6 +336,50 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    if (_isSearching) {
+      return AppBar(
+        backgroundColor: AppColors.primary,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: _hideSearchBar,
+        ),
+        title: TextField(
+          controller: _searchController,
+          autofocus: true,
+          cursorColor: Colors.white,
+          style: AppTextStyles.subtitle.copyWith(
+            color: Colors.white,
+            fontSize: 16,
+          ),
+          decoration: InputDecoration(
+            hintText: 'Search messages...',
+            hintStyle: AppTextStyles.subtitle.copyWith(
+              color: Colors.white.withOpacity(0.7),
+              fontSize: 16,
+            ),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          ),
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value;
+            });
+          },
+        ),
+        actions: [
+          if (_searchController.text.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.clear, color: Colors.white),
+              onPressed: () {
+                _searchController.clear();
+                setState(() {
+                  _searchQuery = '';
+                });
+              },
+            ),
+        ],
+      );
+    }
     return AppBar(
       backgroundColor: AppColors.primary,
       systemOverlayStyle: const SystemUiOverlayStyle(
@@ -427,32 +444,126 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert, color: Colors.white),
           onSelected: (value) {
-            // Handle menu selection
+            switch (value) {
+              case 'view_contact':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(user: widget.user),
+                  ),
+                );
+                break;
+              case 'media':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SharedContentScreen(user: widget.user),
+                  ),
+                );
+                break;
+              case 'search':
+                _showSearchBar();
+                break;
+            }
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'view_contact',
-              child: Text('View Contact'),
+            _buildMenuItem(
+              Icons.person,
+              'View Contact',
+              'view_contact',
             ),
-            const PopupMenuItem(
-              value: 'media',
-              child: Text('Media, links, and docs'),
+            _buildMenuItem(
+              Icons.photo_library,
+              'Media, Links, and Docs',
+              'media',
             ),
-            const PopupMenuItem(
-              value: 'search',
-              child: Text('Search'),
-            ),
-            const PopupMenuItem(
-              value: 'mute',
-              child: Text('Mute notifications'),
-            ),
-            const PopupMenuItem(
-              value: 'wallpaper',
-              child: Text('Wallpaper'),
+            _buildMenuItem(
+              Icons.search,
+              'Search',
+              'search',
             ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildMessageList() {
+    if (_isSearching && _searchQuery.isNotEmpty) {
+      final filteredMessages = _messages.where((message) =>
+          message.message.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+      
+      if (filteredMessages.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.search_off,
+                size: 64,
+                color: AppColors.textSecondary.withOpacity(0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No messages found',
+                style: AppTextStyles.subtitle.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return ListView.builder(
+        reverse: true,
+        itemCount: filteredMessages.length,
+        itemBuilder: (context, index) {
+          final message = filteredMessages[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: ChatBubble(
+              message: message.message,
+              isSent: message.senderId == 'me',
+              timestamp: message.timestamp,
+              isRead: message.isRead,
+              reactions: const [],
+              onReactionTap: (emoji) {},
+              onLongPress: () {},
+              onDoubleTap: () {},
+            ),
+          );
+        },
+      );
+    }
+    return ListView.builder(
+      controller: _scrollController,
+      reverse: true,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      itemCount: _messages.length,
+      itemBuilder: (context, index) {
+        final message = _messages[index];
+        return Dismissible(
+          key: Key(message.id),
+          direction: message.senderId == 'me'
+              ? DismissDirection.endToStart
+              : DismissDirection.startToEnd,
+          background: _buildSwipeBackground(message.senderId == 'me'),
+          confirmDismiss: (direction) async {
+            return false;
+          },
+          child: ChatBubble(
+            message: message.message,
+            isSent: message.senderId == 'me',
+            timestamp: message.timestamp,
+            isRead: message.isRead,
+            reactions: const [],
+            onReactionTap: (emoji) {},
+            onLongPress: () {},
+            onDoubleTap: () {},
+          ),
+        );
+      },
     );
   }
 
@@ -939,6 +1050,51 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
           ),
         ),
       ],
+    );
+  }
+
+  bool _isSearching = false;
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
+  void _showSearchBar() {
+    setState(() {
+      _isSearching = true;
+      _searchQuery = '';
+    });
+  }
+
+  void _hideSearchBar() {
+    setState(() {
+      _isSearching = false;
+      _searchQuery = '';
+      _searchController.clear();
+    });
+  }
+
+  PopupMenuItem<String> _buildMenuItem(IconData icon, String title, String value) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: AppTextStyles.subtitle.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
