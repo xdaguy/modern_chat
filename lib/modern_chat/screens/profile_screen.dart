@@ -4,6 +4,7 @@ import 'package:modern_chat/modern_chat/theme/app_text_styles.dart';
 import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
 import 'package:modern_chat/modern_chat/models/chat_user.dart';
 import 'package:modern_chat/modern_chat/screens/chat_detail_screen.dart';
+import 'package:modern_chat/modern_chat/screens/shared_content_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ChatUser user;
@@ -375,7 +376,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  // Show all media
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SharedContentScreen(user: widget.user),
+                    ),
+                  );
                 },
                 child: const Text('See All'),
               ),
@@ -520,7 +526,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       onTap: () {
-        // Handle tap
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SharedContentScreen(user: widget.user),
+          ),
+        );
       },
     );
   }
