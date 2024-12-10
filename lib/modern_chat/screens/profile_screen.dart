@@ -491,20 +491,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: 'Photos & Videos',
           count: '143',
           color: Colors.blue,
+          onTap: () => _openSharedContent(0),
         ),
         _buildSharedTile(
           icon: Icons.link,
           title: 'Links',
           count: '27',
           color: Colors.orange,
+          onTap: () => _openSharedContent(1),
         ),
         _buildSharedTile(
           icon: Icons.file_present,
           title: 'Documents',
           count: '39',
           color: Colors.purple,
+          onTap: () => _openSharedContent(2),
         ),
       ],
+    );
+  }
+
+  void _openSharedContent(int initialTab) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SharedContentScreen(
+          user: widget.user,
+          initialTab: initialTab,
+        ),
+      ),
     );
   }
 
@@ -513,41 +528,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String title,
     required String count,
     required Color color,
+    required VoidCallback onTap,
   }) {
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, color: color),
-      ),
-      title: Text(title),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            count,
-            style: AppTextStyles.subtitle.copyWith(
-              color: AppColors.textSecondary,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onTap: onTap,
+        child: ListTile(
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
             ),
+            child: Icon(icon, color: color),
           ),
-          const SizedBox(width: 4),
-          const Icon(
-            Icons.chevron_right,
-            color: AppColors.textSecondary,
+          title: Text(title),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                count,
+                style: AppTextStyles.subtitle.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.chevron_right,
+                color: AppColors.textSecondary,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SharedContentScreen(user: widget.user),
-          ),
-        );
-      },
     );
   }
 

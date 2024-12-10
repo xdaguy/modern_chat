@@ -5,8 +5,13 @@ import 'package:modern_chat/modern_chat/theme/app_text_styles.dart';
 
 class SharedContentScreen extends StatefulWidget {
   final ChatUser user;
+  final int initialTab;
 
-  const SharedContentScreen({super.key, required this.user});
+  const SharedContentScreen({
+    super.key,
+    required this.user,
+    this.initialTab = 0,
+  });
 
   @override
   State<SharedContentScreen> createState() => _SharedContentScreenState();
@@ -19,7 +24,11 @@ class _SharedContentScreenState extends State<SharedContentScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
   }
 
   @override
