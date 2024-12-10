@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:modern_chat/modern_chat/theme/app_colors.dart';
 import 'package:modern_chat/modern_chat/theme/app_text_styles.dart';
 import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
@@ -33,29 +34,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          _buildAppBar(context),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                _buildProfileInfo(),
-                const SizedBox(height: 24),
-                _buildStats(),
-                const SizedBox(height: 24),
-                _buildActionButtons(),
-                const SizedBox(height: 24),
-                _buildMediaSection(),
-                const SizedBox(height: 24),
-                _buildAboutSection(),
-                const SizedBox(height: 24),
-                _buildSharedContent(),
-              ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: AppColors.background,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: CustomScrollView(
+          slivers: [
+            _buildAppBar(context),
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  _buildProfileInfo(),
+                  const SizedBox(height: 24),
+                  _buildStats(),
+                  const SizedBox(height: 24),
+                  _buildActionButtons(),
+                  const SizedBox(height: 24),
+                  _buildMediaSection(),
+                  const SizedBox(height: 24),
+                  _buildAboutSection(),
+                  const SizedBox(height: 24),
+                  _buildSharedContent(),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -65,11 +74,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
       expandedHeight: 250,
       pinned: true,
       stretch: true,
-      backgroundColor: AppColors.primary,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      leading: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.black26,
+          shape: BoxShape.circle,
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [
           StretchMode.zoomBackground,
           StretchMode.blurBackground,
+          StretchMode.fadeTitle,
         ],
         background: Stack(
           fit: StackFit.expand,
@@ -87,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.transparent,
+                    Colors.black.withOpacity(0.3),
                     Colors.black.withOpacity(0.3),
                     Colors.black.withOpacity(0.7),
                   ],
@@ -112,17 +138,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-      ),
-      leading: IconButton(
-        icon: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.arrow_back, color: Colors.white),
-        ),
-        onPressed: () => Navigator.pop(context),
       ),
       actions: [
         IconButton(
