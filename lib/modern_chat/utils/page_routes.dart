@@ -1,67 +1,22 @@
 import 'package:flutter/material.dart';
 
-class SlidePageRoute<T> extends PageRouteBuilder<T> {
-  final Widget child;
-  final SlideDirection direction;
-
-  SlidePageRoute({
-    required this.child,
-    this.direction = SlideDirection.right,
-  }) : super(
-          pageBuilder: (context, animation, secondaryAnimation) => child,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var begin = direction.getOffset();
-            const end = Offset.zero;
-            const curve = Curves.easeOutCubic;
-
-            var tween = Tween(begin: begin, end: end).chain(
-              CurveTween(curve: curve),
-            );
-
-            var offsetAnimation = animation.drive(tween);
-
-            var fadeAnimation = CurvedAnimation(
-              parent: animation,
-              curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
-            );
-
-            return SlideTransition(
-              position: offsetAnimation,
-              child: FadeTransition(
-                opacity: fadeAnimation,
-                child: child,
-              ),
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 400),
-        );
-}
-
 enum SlideDirection {
-  right,
   left,
+  right,
   up,
-  down;
-
-  Offset getOffset() {
-    switch (this) {
-      case SlideDirection.right:
-        return const Offset(1.0, 0.0);
-      case SlideDirection.left:
-        return const Offset(-1.0, 0.0);
-      case SlideDirection.up:
-        return const Offset(0.0, -1.0);
-      case SlideDirection.down:
-        return const Offset(0.0, 1.0);
-    }
-  }
+  down,
 }
 
 class FadePageRoute<T> extends PageRouteBuilder<T> {
   final Widget child;
+  final Duration duration;
+  final Curve curve;
 
-  FadePageRoute({required this.child})
-      : super(
+  FadePageRoute({
+    required this.child,
+    this.duration = const Duration(milliseconds: 300),
+    this.curve = Curves.easeOut,
+  }) : super(
           pageBuilder: (context, animation, secondaryAnimation) => child,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
@@ -69,33 +24,88 @@ class FadePageRoute<T> extends PageRouteBuilder<T> {
               child: child,
             );
           },
-          transitionDuration: const Duration(milliseconds: 200),
+          transitionDuration: duration,
+          reverseTransitionDuration: duration,
+        );
+}
+
+class SlidePageRoute<T> extends PageRouteBuilder<T> {
+  final Widget child;
+  final SlideDirection direction;
+  final Duration duration;
+  final Curve curve;
+
+  SlidePageRoute({
+    required this.child,
+    this.direction = SlideDirection.right,
+    this.duration = const Duration(milliseconds: 300),
+    this.curve = Curves.easeOut,
+  }) : super(
+          pageBuilder: (context, animation, secondaryAnimation) => child,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            Offset begin;
+            switch (direction) {
+              case SlideDirection.left:
+                begin = const Offset(-1.0, 0.0);
+                break;
+              case SlideDirection.right:
+                begin = const Offset(1.0, 0.0);
+                break;
+              case SlideDirection.up:
+                begin = const Offset(0.0, 1.0);
+                break;
+              case SlideDirection.down:
+                begin = const Offset(0.0, -1.0);
+                break;
+            }
+
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: begin,
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: curve,
+                ),
+              ),
+              child: child,
+            );
+          },
+          transitionDuration: duration,
+          reverseTransitionDuration: duration,
         );
 }
 
 class ScalePageRoute<T> extends PageRouteBuilder<T> {
   final Widget child;
+  final Alignment alignment;
+  final Duration duration;
+  final Curve curve;
 
-  ScalePageRoute({required this.child})
-      : super(
+  ScalePageRoute({
+    required this.child,
+    this.alignment = Alignment.center,
+    this.duration = const Duration(milliseconds: 300),
+    this.curve = Curves.easeOut,
+  }) : super(
           pageBuilder: (context, animation, secondaryAnimation) => child,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var curve = Curves.easeOutBack;
-            var scaleTween = Tween(begin: 0.8, end: 1.0).chain(
-              CurveTween(curve: curve),
-            );
-            var opacityTween = Tween(begin: 0.0, end: 1.0).chain(
-              CurveTween(curve: Curves.easeOut),
-            );
-
             return ScaleTransition(
-              scale: animation.drive(scaleTween),
-              child: FadeTransition(
-                opacity: animation.drive(opacityTween),
-                child: child,
+              alignment: alignment,
+              scale: Tween<double>(
+                begin: 0.0,
+                end: 1.0,
+              ).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: curve,
+                ),
               ),
+              child: child,
             );
           },
-          transitionDuration: const Duration(milliseconds: 400),
+          transitionDuration: duration,
+          reverseTransitionDuration: duration,
         );
 }

@@ -10,6 +10,7 @@ import 'package:modern_chat/modern_chat/widgets/message_input.dart';
 import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
 import 'package:modern_chat/modern_chat/screens/profile_screen.dart';
 import 'package:modern_chat/modern_chat/screens/shared_content_screen.dart';
+import 'package:modern_chat/modern_chat/utils/page_routes.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final ChatUser user;
@@ -448,16 +449,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
               case 'view_contact':
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfileScreen(user: widget.user),
+                  FadePageRoute(
+                    child: ProfileScreen(user: widget.user),
                   ),
                 );
                 break;
               case 'media':
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => SharedContentScreen(user: widget.user),
+                  SlidePageRoute(
+                    child: SharedContentScreen(user: widget.user),
+                    direction: SlideDirection.left,
                   ),
                 );
                 break;

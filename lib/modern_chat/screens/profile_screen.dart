@@ -6,6 +6,7 @@ import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
 import 'package:modern_chat/modern_chat/models/chat_user.dart';
 import 'package:modern_chat/modern_chat/screens/chat_detail_screen.dart';
 import 'package:modern_chat/modern_chat/screens/shared_content_screen.dart';
+import 'package:modern_chat/modern_chat/utils/page_routes.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ChatUser user;
@@ -514,11 +515,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _openSharedContent(int initialTab) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => SharedContentScreen(
+      SlidePageRoute(
+        child: SharedContentScreen(
           user: widget.user,
           initialTab: initialTab,
         ),
+        direction: SlideDirection.left,
       ),
     );
   }
