@@ -3,6 +3,7 @@ import 'package:modern_chat/modern_chat/theme/app_colors.dart';
 import 'package:modern_chat/modern_chat/theme/app_text_styles.dart';
 import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
 import 'package:modern_chat/modern_chat/models/chat_user.dart';
+import 'package:modern_chat/modern_chat/screens/chat_detail_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ChatUser user;
@@ -299,7 +300,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           label: 'Message',
           color: AppColors.primary,
           onTap: () {
-            // Handle message
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatDetailScreen(user: widget.user),
+              ),
+            );
           },
         ),
         _buildActionButton(
