@@ -337,50 +337,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
-    if (_isSearching) {
-      return AppBar(
-        backgroundColor: AppColors.primary,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: _hideSearchBar,
-        ),
-        title: TextField(
-          controller: _searchController,
-          autofocus: true,
-          cursorColor: Colors.white,
-          style: AppTextStyles.subtitle.copyWith(
-            color: Colors.white,
-            fontSize: 16,
-          ),
-          decoration: InputDecoration(
-            hintText: 'Search messages...',
-            hintStyle: AppTextStyles.subtitle.copyWith(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 16,
-            ),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          ),
-          onChanged: (value) {
-            setState(() {
-              _searchQuery = value;
-            });
-          },
-        ),
-        actions: [
-          if (_searchController.text.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.clear, color: Colors.white),
-              onPressed: () {
-                _searchController.clear();
-                setState(() {
-                  _searchQuery = '';
-                });
-              },
-            ),
-        ],
-      );
-    }
     return AppBar(
       backgroundColor: AppColors.primary,
       systemOverlayStyle: const SystemUiOverlayStyle(
@@ -393,19 +349,23 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         icon: const Icon(Icons.arrow_back, color: Colors.white),
         onPressed: () => Navigator.pop(context),
       ),
-      title: GestureDetector(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProfileScreen(user: widget.user),
-          ),
-        ),
+      title: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfileScreen(user: widget.user),
+            ),
+          );
+        },
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
         child: Row(
           children: [
             UserAvatar(
               imageUrl: widget.user.avatarUrl,
-              isOnline: widget.user.isOnline,
               size: 40,
+              isOnline: widget.user.isOnline,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -414,15 +374,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                 children: [
                   Text(
                     widget.user.name,
-                    style: const TextStyle(
+                    style: AppTextStyles.subtitle.copyWith(
                       color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
-                    widget.user.isOnline ? 'online' : 'offline',
-                    style: TextStyle(
+                    widget.user.isOnline ? 'Online' : 'Offline',
+                    style: AppTextStyles.subtitle.copyWith(
                       color: Colors.white.withOpacity(0.7),
                       fontSize: 12,
                     ),
