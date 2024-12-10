@@ -106,6 +106,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Image.network(
                 widget.user.coverUrl,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.primary.withOpacity(0.8),
+                          AppColors.primary.withOpacity(0.6),
+                        ],
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.signal_wifi_off,
+                          color: Colors.white.withOpacity(0.8),
+                          size: 48,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No Connection',
+                          style: AppTextStyles.subtitle.copyWith(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Check your internet connection',
+                          style: AppTextStyles.subtitle.copyWith(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                    ),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.primary.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             Container(
@@ -383,44 +443,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Media',
-                style: AppTextStyles.heading2.copyWith(fontSize: 18),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SharedContentScreen(user: widget.user),
-                    ),
-                  );
-                },
-                child: const Text('See All'),
-              ),
-            ],
+          child: Text(
+            'Media',
+            style: AppTextStyles.heading2.copyWith(fontSize: 18),
           ),
         ),
+        const SizedBox(height: 16),
         SizedBox(
           height: 100,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: 6,
             itemBuilder: (context, index) {
-              return Container(
-                width: 100,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      'https://picsum.photos/200/200?random=$index',
+              return Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: Image.network(
+                      'https://picsum.photos/200?random=$index',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.broken_image_outlined,
+                                color: AppColors.primary.withOpacity(0.5),
+                                size: 24,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'No Image',
+                                style: AppTextStyles.subtitle.copyWith(
+                                  color: AppColors.primary.withOpacity(0.5),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.primary.withOpacity(0.5),
+                              ),
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    fit: BoxFit.cover,
                   ),
                 ),
               );
