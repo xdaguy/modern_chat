@@ -17,6 +17,10 @@ class Call {
     required this.timestamp,
     this.duration = 0,
   });
+
+  bool get isOutgoing => status == CallStatus.outgoing;
+  bool get isMissed => status == CallStatus.missed;
+  bool get isVideoCall => type == CallType.video;
 }
 
 // Sample calls data

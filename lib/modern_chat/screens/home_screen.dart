@@ -14,6 +14,7 @@ import 'package:modern_chat/modern_chat/models/call.dart';
 import 'package:modern_chat/modern_chat/screens/new_chat_screen.dart';
 import 'package:modern_chat/modern_chat/utils/page_routes.dart';
 import 'package:modern_chat/modern_chat/screens/settings_screen.dart';
+import 'package:modern_chat/modern_chat/screens/call_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -1102,133 +1103,84 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildCallTile(ChatUser user, Call call) {
-    final timeAgo = _getTimeAgo(call.timestamp);
-    
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return ListTile(
+      leading: UserAvatar(
+        imageUrl: user.avatarUrl,
+        size: 50,
+        isOnline: user.isOnline,
+      ),
+      title: Text(user.name),
+      subtitle: Row(
+        children: [
+          Icon(
+            call.isOutgoing ? Icons.call_made : Icons.call_received,
+            size: 14,
+            color: call.isMissed ? Colors.red : Colors.green,
           ),
+          const SizedBox(width: 4),
+          Text(
+            _formatCallTime(call.timestamp),
+            style: AppTextStyles.subtitle.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+            ),
+          ),
+          if (call.duration > 0) ...[
+            Text(
+              ' • ',
+              style: AppTextStyles.subtitle.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+              ),
+            ),
+            Text(
+              _formatDuration(call.duration),
+              style: AppTextStyles.subtitle.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+              ),
+            ),
+          ],
         ],
       ),
-      child: Row(
-        children: [
-          Stack(
-            children: [
-              UserAvatar(
-                imageUrl: user.avatarUrl,
-                size: 50,
-                isOnline: user.isOnline,
-              ),
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: call.type == CallType.video ? Colors.blue : Colors.green,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: Icon(
-                    call.type == CallType.video ? Icons.videocam : Icons.call,
-                    color: Colors.white,
-                    size: 12,
-                  ),
+      trailing: Container(
+        margin: const EdgeInsets.only(left: 8),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: IconButton(
+          icon: Icon(
+            call.isVideoCall ? Icons.videocam : Icons.call,
+            size: 20,
+          ),
+          color: AppColors.primary,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CallScreen(
+                  user: user,
+                  isVideoCall: call.isVideoCall,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  user.name,
-                  style: AppTextStyles.heading2.copyWith(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      call.status == CallStatus.incoming
-                          ? Icons.call_received
-                          : call.status == CallStatus.outgoing
-                              ? Icons.call_made
-                              : Icons.call_missed,
-                      size: 14,
-                      color: call.status == CallStatus.missed
-                          ? Colors.red
-                          : Colors.green,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      timeAgo,
-                      style: AppTextStyles.subtitle.copyWith(
-                        color: AppColors.textSecondary,
-                        fontSize: 13,
-                      ),
-                    ),
-                    if (call.duration > 0) ...[
-                      Text(
-                        ' • ',
-                        style: AppTextStyles.subtitle.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Text(
-                        _formatDuration(call.duration),
-                        style: AppTextStyles.subtitle.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 8),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: Icon(
-                call.type == CallType.video ? Icons.videocam : Icons.call,
-                color: AppColors.primary,
-                size: 20,
-              ),
-              onPressed: () {
-                // Handle call
-              },
-              padding: const EdgeInsets.all(8),
-              constraints: const BoxConstraints(
-                minWidth: 36,
-                minHeight: 36,
-              ),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
+  }
+
+  String _formatCallTime(DateTime dateTime) {
+    final difference = DateTime.now().difference(dateTime);
+    
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} minutes ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} hours ago';
+    } else {
+      return 'Yesterday';
+    }
   }
 
   String _formatDuration(int seconds) {

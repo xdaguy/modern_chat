@@ -7,6 +7,7 @@ import 'package:modern_chat/modern_chat/models/chat_user.dart';
 import 'package:modern_chat/modern_chat/screens/chat_detail_screen.dart';
 import 'package:modern_chat/modern_chat/screens/shared_content_screen.dart';
 import 'package:modern_chat/modern_chat/utils/page_routes.dart';
+import 'package:modern_chat/modern_chat/screens/call_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ChatUser user;
@@ -390,7 +391,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           label: 'Audio Call',
           color: Colors.green,
           onTap: () {
-            // Handle audio call
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CallScreen(
+                  user: widget.user,
+                  isVideoCall: false,
+                ),
+              ),
+            );
           },
         ),
         _buildActionButton(
@@ -398,7 +407,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           label: 'Video Call',
           color: Colors.blue,
           onTap: () {
-            // Handle video call
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CallScreen(
+                  user: widget.user,
+                  isVideoCall: true,
+                ),
+              ),
+            );
           },
         ),
       ],

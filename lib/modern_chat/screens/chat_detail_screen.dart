@@ -11,6 +11,7 @@ import 'package:modern_chat/modern_chat/widgets/user_avatar.dart';
 import 'package:modern_chat/modern_chat/screens/profile_screen.dart';
 import 'package:modern_chat/modern_chat/screens/shared_content_screen.dart';
 import 'package:modern_chat/modern_chat/utils/page_routes.dart';
+import 'package:modern_chat/modern_chat/screens/call_screen.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final ChatUser user;
@@ -396,11 +397,31 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       actions: [
         IconButton(
           icon: const Icon(Icons.videocam, color: Colors.white),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CallScreen(
+                  user: widget.user,
+                  isVideoCall: true,
+                ),
+              ),
+            );
+          },
         ),
         IconButton(
           icon: const Icon(Icons.call, color: Colors.white),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CallScreen(
+                  user: widget.user,
+                  isVideoCall: false,
+                ),
+              ),
+            );
+          },
         ),
         PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert, color: Colors.white),
