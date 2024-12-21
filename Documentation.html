@@ -2015,6 +2015,224 @@
             50% { transform: translate(-50%, -50%) scale(1.05); }
             100% { transform: translate(-50%, -50%) scale(1); }
         }
+
+        .getting-started-wrapper {
+            background: var(--bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 2rem;
+        }
+
+        .getting-started-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .getting-started-header .subtitle {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .steps-container {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .step-card {
+            display: flex;
+            gap: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .ide-options {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .ide-badge {
+            background: var(--bg);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .code-block.with-copy {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            color: var(--text); /* Add text color for light mode */
+            position: relative;
+        }
+
+        .tip {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .run-options {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .run-option h4 {
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .step-card.feature {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .keyboard-shortcut {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .keyboard-shortcut .key {
+            background: var(--bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-family: monospace;
+            border: 1px solid var(--border);
+        }
+
+        .troubleshooting {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .common-issues {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .issue {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .issue-icon {
+            font-size: 1.2rem;
+        }
+
+        .issue-content h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .issue-content code {
+            background: var(--bg);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Dark mode adjustments */
+        [data-theme="dark"] .step-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Add specific styling for code elements */
+        .code-block.with-copy code {
+            color: var(--text);
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-right: 4rem; /* Make space for copy button */
+        }
+
+        /* Style for copy button */
+        .code-block .copy-btn {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.25rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            opacity: 0.8;
+        }
+
+        .code-block:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .code-block .copy-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .code-block .copy-btn.copied {
+            background: #10B981;
+        }
+
+        /* Dark mode adjustments for copy button */
+        [data-theme="dark"] .code-block .copy-btn {
+            background: var(--primary);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -2297,37 +2515,102 @@
             </section>
 
             <section id="getting-started" class="section">
-                <h2>Getting Started (Build & Run)</h2>
-                
-                <div class="important-note">
-                    <strong>Important:</strong> All below steps must be followed to build and run application
+                <div class="getting-started-wrapper">
+                    <div class="getting-started-header">
+                        <h2>Getting Started</h2>
+                        <p class="subtitle">Follow these steps to build and run the Modern Chat UI Kit</p>
+                    </div>
+
+                    <div class="steps-container">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Project Setup</h3>
+                                <p>Clone or download the project and open it in your preferred IDE:</p>
+                                <div class="ide-options">
+                                    <span class="ide-badge">Android Studio</span>
+                                    <span class="ide-badge">VS Code</span>
+                                    <span class="ide-badge">IntelliJ IDEA</span>
+                                </div>
+                            </div>
                 </div>
 
-                <h3>Download Project</h3>
-                <p>Download and find your project folder, use your preferred IDE (Android Studio / Visual Studio Code / IntelliJ IDEA) to run the project.</p>
-
-                <h3>Get Dependencies</h3>
-                <p>After you loaded project successfully, run the following command in the terminal to install all the dependencies listed in the <code>pubspec.yaml</code> file in the project's root directory or just click on Pub get in pubspec.yaml file if you don't want to use command.</p>
-                <div class="code-block">
-flutter pub get<button class="copy-btn">Copy</button>
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Install Dependencies</h3>
+                                <p>Run this command in your terminal to install dependencies:</p>
+                                <div class="code-block with-copy">
+                                    <code>flutter pub get</code>
+                                    <button class="copy-btn">Copy</button>
+                                </div>
+                                <div class="tip">
+                                    <span class="tip-icon">💡</span>
+                                    <span>Or click "Pub get" in pubspec.yaml file</span>
+                                </div>
+                            </div>
                 </div>
 
-                <h3>Build and Run App</h3>
-                <ol>
-                    <li>Locate the main Android Studio toolbar.</li>
-                    <li>In the target selector, select an Android device for running the app.</li>
-                    <li>Click the run icon in the toolbar, or invoke the menu item Run > Run.</li>
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Run the App</h3>
+                                <div class="run-options">
+                                    <div class="run-option">
+                                        <h4>Using IDE</h4>
+                                        <ol>
+                                            <li>Select a target device</li>
+                                            <li>Click the Run button ▶️</li>
                 </ol>
+                                    </div>
+                                    <div class="run-option">
+                                        <h4>Using Terminal</h4>
+                                        <div class="code-block with-copy">
+                                            <code>flutter run</code>
+                                            <button class="copy-btn">Copy</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="note">
-                    <strong>Note:</strong> If you don't use Android Studio or IntelliJ you can use the command line to run your application using:
-                    <div class="code-block">
-flutter run<button class="copy-btn">Copy</button>
+                        <div class="step-card feature">
+                            <div class="step-content">
+                                <div class="feature-icon">🔄</div>
+                                <h3>Hot Reload Support</h3>
+                                <p>Make changes to your code and see them instantly with Flutter's Hot Reload feature.</p>
+                                <div class="keyboard-shortcut">
+                                    <span class="key">r</span>
+                                    <span class="description">Hot Reload</span>
+                                </div>
+                                <div class="keyboard-shortcut">
+                                    <span class="key">R</span>
+                                    <span class="description">Hot Restart</span>
+                                </div>
+                            </div>
                     </div>
                 </div>
 
-                <h3>Try Hot Reload</h3>
-                <p>Flutter offers a fast development cycle with Stateful Hot Reload, the ability to reload the code of a live running app without restarting or losing app state. Make a change to app source, tell your IDE or command-line tool that you want to hot reload, and see the change in your simulator, emulator, or device.</p>
+                    <div class="troubleshooting">
+                        <h3>Troubleshooting</h3>
+                        <div class="common-issues">
+                            <div class="issue">
+                                <span class="issue-icon">❗</span>
+                                <div class="issue-content">
+                                    <h4>Dependencies Error</h4>
+                                    <p>Try running: <code>flutter clean && flutter pub get</code></p>
+                                </div>
+                            </div>
+                            <div class="issue">
+                                <span class="issue-icon">❗</span>
+                                <div class="issue-content">
+                                    <h4>Build Failed</h4>
+                                    <p>Ensure Flutter and Dart are up to date: <code>flutter upgrade</code></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <section id="project-structure" class="section">
@@ -2439,7 +2722,7 @@ flutter run<button class="copy-btn">Copy</button>
             <section id="support" class="section">
                 <div class="support-wrapper">
                     <div class="support-header">
-                        <h2>Help & Support</h2>
+                <h2>Help & Support</h2>
                         <p class="support-subtitle">We're here to help you get the most out of Modern Chat UI Kit</p>
                     </div>
 
@@ -2524,7 +2807,7 @@ flutter run<button class="copy-btn">Copy</button>
                                 <span class="emoji">👎</span>
                                 <span>No</span>
                             </button>
-                        </div>
+                </div>
                     </div>
                     
                     <div id="feedbackDetail" class="feedback-detail" style="display: none;">
@@ -2634,29 +2917,28 @@ flutter run<button class="copy-btn">Copy</button>
     </div>
 
     <script>
-        document.querySelectorAll('.copy-btn').forEach(button => {
-            button.addEventListener('click', async () => {
-                const codeBlock = button.parentElement;
-                const code = Array.from(codeBlock.childNodes)
-                    .filter(node => node.nodeType === Node.TEXT_NODE)
-                    .map(node => node.textContent)
-                    .join('')
-                    .trim();
-
-                try {
-                    await navigator.clipboard.writeText(code);
+        // Add event listeners for copy buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.code-block .copy-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const code = button.previousElementSibling.textContent;
+                    navigator.clipboard.writeText(code.trim()).then(() => {
                     button.textContent = 'Copied!';
                     button.classList.add('copied');
-                } catch (err) {
-                    button.textContent = 'Failed!';
-                    button.classList.add('error');
+                        
+                        setTimeout(() => {
+                            button.textContent = 'Copy';
+                            button.classList.remove('copied');
+                        }, 2000);
+                    }).catch(err => {
                     console.error('Failed to copy:', err);
-                } finally {
+                        button.textContent = 'Failed!';
+                        
                     setTimeout(() => {
                         button.textContent = 'Copy';
-                        button.classList.remove('copied', 'error');
                     }, 2000);
-                }
+                    });
+                });
             });
         });
     </script>
@@ -2988,6 +3270,28 @@ flutter run<button class="copy-btn">Copy</button>
                 btnText.textContent = originalText;
                 selectedType = '';
             }, 3000);
+        }
+    </script>
+
+    <script>
+        function copyCode(button) {
+            const code = button.previousElementSibling.textContent;
+            navigator.clipboard.writeText(code.trim()).then(() => {
+            button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+            setTimeout(() => {
+                button.textContent = 'Copy';
+                    button.classList.remove('copied');
+            }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                button.textContent = 'Failed!';
+                
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
         }
     </script>
 </body>
