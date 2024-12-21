@@ -2233,6 +2233,247 @@
             background: var(--primary);
             color: white;
         }
+
+        .tools-setup-wrapper {
+            background: var(--bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 2rem;
+        }
+
+        .tools-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .tools-subtitle {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .requirements-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-icon {
+            font-size: 1.5rem;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .req-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .req-icon {
+            font-size: 1.5rem;
+        }
+
+        .req-details h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .req-details p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .setup-steps {
+            display: grid;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .setup-step {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-number {
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .download-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .download-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .os-icon {
+            font-size: 1.5rem;
+        }
+
+        .verification-cmd {
+            margin-top: 1.5rem;
+        }
+
+        .ide-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .ide-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .ide-card.recommended {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .ide-header {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .ide-icon {
+            width: 48px;
+            height: 48px;
+        }
+
+        .recommended-badge {
+            position: absolute;
+            top: -0.5rem;
+            right: -0.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .download-link:hover {
+            opacity: 0.9;
+        }
+
+        .plugin-instructions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .instruction-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .instruction-card h4 {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .instruction-card ol {
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .instruction-card li {
+            margin-bottom: 0.5rem;
+        }
+
+        .setup-note {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .note-icon {
+            font-size: 1.5rem;
+        }
+
+        .note-content code {
+            background: var(--bg);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        /* Dark mode adjustments */
+        [data-theme="dark"] .download-btn:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        [data-theme="dark"] .ide-card.recommended {
+            background: rgba(var(--primary-rgb), 0.1);
+        }
     </style>
 </head>
 <body>
@@ -2335,182 +2576,148 @@
             </section>
 
             <section id="tools-setup" class="section">
-                <h2>Tools & Setup</h2>
-                <div class="important-note">
-                    <strong>Important:</strong> To edit this project you must have Flutter and Dart installed and configured successfully on your computer.
-                </div>
-
-                <h3>Required Tools</h3>
-                <ul>
-                    <li>Flutter & Dart SDK</li>
-                    <li>IDE: Android Studio (Recommended), Visual Studio Code or IntelliJ IDEA</li>
-                    <li>Set up your editor - Install the Flutter and Dart plugins</li>
-                </ul>
-
-                <div class="platform-setup">
-                    <h3>Flutter Setup Guide</h3>
-                    <p>Choose your operating system to view setup instructions:</p>
+                <div class="tools-setup-wrapper">
+                    <div class="tools-header">
+                        <h2>Tools & Setup</h2>
+                        <p class="tools-subtitle">Complete these steps to set up your development environment</p>
+                    </div>
                     
-                    <div class="platform-tabs">
-                        <div class="platform-tab active" data-platform="windows">Windows</div>
-                        <div class="platform-tab" data-platform="macos">macOS</div>
-                        <div class="platform-tab" data-platform="linux">Linux</div>
-                    </div>
-
-                    <!-- Windows Setup -->
-                    <div class="platform-content active" id="windows-setup">
-                        <div class="step-guide">
-                            <div class="step-item">
-                                <h4>Step 1: Get the Flutter SDK</h4>
-                                <p>Download and extract the Flutter SDK:</p>
-                                <div class="code-block">
-                                    Download Flutter SDK and extract to C:\src\flutter
-                                    <button class="copy-btn">Copy</button>
-                                </div>
-                                <p class="note">Do not install Flutter in a directory like C:\Program Files\ that requires elevated privileges.</p>
-                            </div>
-
-                            <div class="step-item">
-                                <h4>Step 2: Update your PATH</h4>
-                                <ol>
-                                    <li>From the Start search bar, enter 'env' and select "Edit environment variables for your account"</li>
-                                    <li>Under User variables check if there is an entry called Path:
-                                        <ul>
-                                            <li>If exists: Append the full path to flutter\bin using ; as a separator</li>
-                                            <li>If doesn't exist: Create a new user variable named Path with the full path to flutter\bin</li>
-                                        </ul>
-                                    </li>
-                                </ol>
-                                <div class="important-note">
-                                    <strong>Note:</strong> Close and reopen any existing console windows for these changes to take effect.
+                    <div class="requirements-card">
+                        <div class="card-header">
+                            <span class="header-icon">⚡</span>
+                            <h3>System Requirements</h3>
+                        </div>
+                        <div class="requirements-grid">
+                            <div class="req-item">
+                                <span class="req-icon">💻</span>
+                                <div class="req-details">
+                                    <h4>Operating System</h4>
+                                    <p>Windows 10 or later (64-bit), macOS, or Linux</p>
                                 </div>
                             </div>
-
-                            <div class="step-item">
-                                <h4>Step 3: Verify Installation</h4>
-                                <p>Run flutter doctor to verify your installation and see any remaining dependencies you may need:</p>
-                                <div class="code-block">
-                                    flutter doctor
-                                    <button class="copy-btn">Copy</button>
+                            <div class="req-item">
+                                <span class="req-icon">🛠️</span>
+                                <div class="req-details">
+                                    <h4>Development Tools</h4>
+                                    <p>Git, Command Line Tools</p>
                                 </div>
-                                <p>This command checks your environment and displays a report of the status of your Flutter installation.</p>
+                            </div>
+                            <div class="req-item">
+                                <span class="req-icon">📦</span>
+                                <div class="req-details">
+                                    <h4>Disk Space</h4>
+                                    <p>2.5 GB (IDE + Android SDK)</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- macOS Setup -->
-                    <div class="platform-content" id="macos-setup">
-                        <div class="step-guide">
-                            <div class="step-item">
-                                <h4>Step 1: Get the Flutter SDK</h4>
-                                <p>Download and extract the Flutter SDK:</p>
-                                <ol>
-                                    <li>Download SDK and extract the file</li>
-                                    <li>Move the extracted flutter folder to your desired location (e.g., Documents/flutter)</li>
-                                </ol>
+                    <div class="setup-steps">
+                        <div class="setup-step">
+                            <div class="step-header">
+                                <span class="step-number">1</span>
+                                <h3>Install Flutter SDK</h3>
                             </div>
-
-                            <div class="step-item">
-                                <h4>Step 2: Update your path</h4>
-                                <p>You have two options to update your PATH:</p>
-                                
-                                <h5>Option 1: For current terminal session</h5>
-                                <div class="code-block">
-                                    export PATH="$PATH:`pwd`/flutter/bin"
-                                    <button class="copy-btn">Copy</button>
+                            <div class="step-content">
+                                <div class="download-options">
+                                    <a href="https://flutter.dev/docs/get-started/install/windows" class="download-btn windows">
+                                        <span class="os-icon">🪟</span>
+                                        <span class="os-name">Windows</span>
+                                    </a>
+                                    <a href="https://flutter.dev/docs/get-started/install/macos" class="download-btn macos">
+                                        <span class="os-icon">🍎</span>
+                                        <span class="os-name">macOS</span>
+                                    </a>
+                                    <a href="https://flutter.dev/docs/get-started/install/linux" class="download-btn linux">
+                                        <span class="os-icon">🐧</span>
+                                        <span class="os-name">Linux</span>
+                                    </a>
                                 </div>
-
-                                <h5>Option 2: Update permanently</h5>
-                                <ol>
-                                    <li>Create/open .bash_profile:
-                                        <div class="code-block">
-                                            sudo open -e $HOME/.bash_profile
-                                            <button class="copy-btn">Copy</button>
-                                        </div>
-                                    </li>
-                                    <li>Add the following line:
-                                        <div class="code-block">
-                                            export PATH="$PATH:[PATH_TO_FLUTTER_GIT_DIRECTORY]/flutter/bin"
-                                            <button class="copy-btn">Copy</button>
-                                        </div>
-                                    </li>
-                                    <li>Refresh PATH variables:
-                                        <div class="code-block">
-                                            source $HOME/.bash_profile
-                                            <button class="copy-btn">Copy</button>
-                                        </div>
-                                    </li>
-                                </ol>
-                            </div>
-
-                            <div class="step-item">
-                                <h4>Step 3: Install Xcode</h4>
-                                <p>Download and install Xcode from the Mac App Store: <a href="https://apps.apple.com/us/app/xcode/id497799835?mt=12" target="_blank">Xcode</a></p>
-                            </div>
-
-                            <div class="step-item">
-                                <h4>Step 4: Verify Installation</h4>
-                                <p>Run flutter doctor to verify your installation and see any remaining dependencies you may need:</p>
-                                <div class="code-block">
-                                    flutter doctor
-                                    <button class="copy-btn">Copy</button>
+                                <div class="verification-cmd">
+                                    <p>After installation, verify setup with:</p>
+                                    <div class="code-block with-copy">
+                                        <code>flutter doctor</code>
+                                        <button class="copy-btn">Copy</button>
+                                    </div>
                                 </div>
-                                <p>This command checks your environment and displays a report of the status of your Flutter installation.</p>
+                            </div>
+                        </div>
+
+                        <div class="setup-step">
+                            <div class="step-header">
+                                <span class="step-number">2</span>
+                                <h3>Set Up IDE</h3>
+                            </div>
+                            <div class="step-content">
+                                <div class="ide-cards">
+                                    <div class="ide-card recommended">
+                                        <div class="ide-header">
+                                            <img 
+                                                src="https://developer.android.com/static/studio/images/new-studio-logo-1_1920.png"
+                                                alt="Android Studio"
+                                                class="ide-icon"
+                                                onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjQgNEwxMiAxMlYzNkwyNCA0NEwzNiAzNlYxMkwyNCA0WiIgZmlsbD0iIzNERDc5NyIvPjwvc3ZnPg==';"
+                                            >
+                                            <span class="recommended-badge">Recommended</span>
+                                        </div>
+                                        <h4>Android Studio</h4>
+                                        <p>Full-featured IDE with Android tools</p>
+                                        <a href="https://developer.android.com/studio" class="download-link" target="_blank">Download</a>
+                                    </div>
+                                    <div class="ide-card">
+                                        <div class="ide-header">
+                                            <img 
+                                                src="https://code.visualstudio.com/assets/images/code-stable.png"
+                                                alt="VS Code"
+                                                class="ide-icon"
+                                                onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNSA1VjQzTDM4IDI0TDUgNVoiIGZpbGw9IiMwMDdBQ0MiLz48L3N2Zz4=';"
+                                            >
+                                        </div>
+                                        <h4>VS Code</h4>
+                                        <p>Lightweight editor with extensions</p>
+                                        <a href="https://code.visualstudio.com/" class="download-link" target="_blank">Download</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setup-step">
+                            <div class="step-header">
+                                <span class="step-number">3</span>
+                                <h3>Install Flutter Plugin</h3>
+                            </div>
+                            <div class="step-content">
+                                <div class="plugin-instructions">
+                                    <div class="instruction-card">
+                                        <h4>Android Studio</h4>
+                                        <ol>
+                                            <li>Go to Preferences > Plugins</li>
+                                            <li>Search for "Flutter"</li>
+                                            <li>Click Install</li>
+                                            <li>Restart IDE</li>
+                                        </ol>
+                                    </div>
+                                    <div class="instruction-card">
+                                        <h4>VS Code</h4>
+                                        <ol>
+                                            <li>Open Extensions (Ctrl+Shift+X)</li>
+                                            <li>Search for "Flutter"</li>
+                                            <li>Click Install</li>
+                                            <li>Reload VS Code</li>
+                                        </ol>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Linux Setup -->
-                    <div class="platform-content" id="linux-setup">
-                        <div class="step-guide">
-                            <div class="step-item">
-                                <h4>Step 1: Get the Flutter SDK</h4>
-                                <p>Download and extract the Flutter SDK:</p>
-                                <div class="code-block">
-                                    cd ~/development
-                                    tar xf ~/Downloads/flutter_linux_3.x.x-stable.tar.xz
-                                    <button class="copy-btn">Copy</button>
-                                </div>
-                            </div>
-
-                            <div class="step-item">
-                                <h4>Step 2: Update your path</h4>
-                                <p>Add Flutter to your PATH by adding this line to your shell's rc file (.bashrc, .zshrc, etc.):</p>
-                                <div class="code-block">
-                                    export PATH="$PATH:`pwd`/flutter/bin"
-                                    <button class="copy-btn">Copy</button>
-                                </div>
-                                <p>Refresh your current shell:</p>
-                                <div class="code-block">
-                                    source ~/.bashrc  # or source ~/.zshrc
-                                    <button class="copy-btn">Copy</button>
-                                </div>
-                            </div>
-
-                            <div class="step-item">
-                                <h4>Step 3: Verify Installation</h4>
-                                <p>Run flutter doctor to verify your installation and see any remaining dependencies you may need:</p>
-                                <div class="code-block">
-                                    flutter doctor
-                                    <button class="copy-btn">Copy</button>
-                                </div>
-                                <p>This command checks your environment and displays a report of the status of your Flutter installation.</p>
-                            </div>
+                    <div class="setup-note">
+                        <div class="note-icon">💡</div>
+                        <div class="note-content">
+                            <h4>Pro Tip</h4>
+                            <p>Run <code>flutter doctor</code> after setup to ensure everything is configured correctly. Fix any issues before proceeding.</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="platform-specific">
-                    <div class="platform-header">
-                        <img src="assets/android-studio.png" alt="Android Studio" class="platform-icon">
-                        <h3>Android Studio Setup</h3>
-                    </div>
-                    <ul>
-                        <li>Download Android Studio: <a href="https://developer.android.com/studio/" target="_blank">https://developer.android.com/studio/</a></li>
-                        <li>Install Flutter and Dart plugins from the marketplace</li>
-                        <li>Configure Android SDK</li>
-                        <li>Create/Import your Flutter project</li>
-                    </ul>
                 </div>
             </section>
 
