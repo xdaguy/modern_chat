@@ -1493,6 +1493,329 @@
         [data-theme="dark"] .toc-column li:hover {
             background: rgba(var(--primary-rgb), 0.1);
         }
+
+        .feedback-container {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+        }
+        
+        .feedback-form textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            resize: vertical;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .feedback-form textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+        }
+        
+        .submit-feedback {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .submit-feedback:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .feedback-alternative {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        .feedback-alternative a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .feedback-alternative a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Dark mode adjustments */
+        [data-theme="dark"] .feedback-form select,
+        [data-theme="dark"] .feedback-form textarea {
+            background: var(--bg-light);
+        }
+
+        .feedback-wrapper {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .feedback-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .feedback-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        
+        .reaction-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .reaction-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .reaction-btn:hover {
+            background: var(--bg-light);
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+        
+        .reaction-btn .emoji {
+            font-size: 1.25rem;
+        }
+        
+        .feedback-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .option-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option-btn:hover {
+            background: var(--bg-light);
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+        
+        .option-btn.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+        
+        .option-btn .icon {
+            font-size: 1.5rem;
+        }
+        
+        .feedback-form-wrapper {
+            margin-top: 1.5rem;
+        }
+        
+        .feedback-form-wrapper textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.2s ease;
+        }
+        
+        .feedback-form-wrapper textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+        
+        .cancel-btn {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .cancel-btn:hover {
+            background: var(--bg-light);
+        }
+        
+        .submit-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .submit-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .thank-you-message {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .thank-you-emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+        
+        .thank-you-message h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        
+        .thank-you-message p {
+            color: var(--text-secondary);
+        }
+        
+        /* Dark mode adjustments */
+        [data-theme="dark"] .feedback-wrapper {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        [data-theme="dark"] .option-btn.selected {
+            background: rgba(var(--primary-rgb), 0.2);
+        }
+
+        /* Add these animation keyframes */
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Update feedback detail animations */
+        #feedbackDetail {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        /* Update thank you message styles */
+        .thank-you-message {
+            text-align: center;
+            padding: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .thank-you-emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+            animation: pulse 1s ease-in-out;
+        }
+
+        /* Add success animation to submit button */
+        .submit-btn.success {
+            background: #10B981;
+            pointer-events: none;
+        }
+
+        .submit-btn.success .btn-icon {
+            transform: rotate(90deg);
+        }
     </style>
 </head>
 <body>
@@ -1928,15 +2251,63 @@ flutter run<button class="copy-btn">Copy</button>
             </section>
 
             <section id="feedback" class="section">
-                <h2>Documentation Feedback</h2>
-                <p>Was this documentation helpful? Let us know how we can improve it.</p>
-                <div class="feedback-buttons">
-                    <button class="feedback-btn" data-value="yes">👍 Yes</button>
-                    <button class="feedback-btn" data-value="no">👎 No</button>
-                </div>
-                <div class="feedback-form" style="display: none;">
-                    <textarea placeholder="Tell us how we can improve this documentation..." rows="4"></textarea>
-                    <button class="submit-feedback">Submit Feedback</button>
+                <div class="feedback-wrapper">
+                    <div class="feedback-header">
+                        <h2>Was this helpful?</h2>
+                        <div class="reaction-buttons">
+                            <button class="reaction-btn" onclick="handleReaction('yes')">
+                                <span class="emoji">👍</span>
+                                <span>Yes</span>
+                            </button>
+                            <button class="reaction-btn" onclick="handleReaction('no')">
+                                <span class="emoji">👎</span>
+                                <span>No</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="feedbackDetail" class="feedback-detail" style="display: none;">
+                        <div class="feedback-options">
+                            <button class="option-btn" data-type="suggestion">
+                                <span class="icon">💡</span>
+                                <span>Suggestion</span>
+                            </button>
+                            <button class="option-btn" data-type="issue">
+                                <span class="icon">🐛</span>
+                                <span>Report Issue</span>
+                            </button>
+                            <button class="option-btn" data-type="praise">
+                                <span class="icon">⭐</span>
+                                <span>Praise</span>
+                            </button>
+                            <button class="option-btn" data-type="other">
+                                <span class="icon">💭</span>
+                                <span>Other</span>
+                            </button>
+                        </div>
+                        
+                        <div class="feedback-form-wrapper">
+                            <textarea 
+                                id="feedbackMessage" 
+                                placeholder="Tell us more about your experience..."
+                                rows="4"
+                            ></textarea>
+                            
+                            <div class="form-actions">
+                                <button class="cancel-btn" onclick="cancelFeedback()">Cancel</button>
+                                <button class="submit-btn" onclick="submitFeedback()">
+                                    <span class="btn-text">Send Feedback</span>
+                                    <span class="btn-icon">→</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="thankYouMessage" class="thank-you-message" style="display: none;">
+                        <span class="thank-you-emoji">🙏</span>
+                        <h3>Thank you for your feedback!</h3>
+                        <p>Your input helps us improve the documentation.</p>
+                    </div>
                 </div>
             </section>
 
@@ -2272,35 +2643,91 @@ flutter run<button class="copy-btn">Copy</button>
     </script>
 
     <script>
-        // Feedback functionality
-        const feedbackBtns = document.querySelectorAll('.feedback-btn');
-        const feedbackForm = document.querySelector('.feedback-form');
+        let selectedType = '';
         
-        feedbackBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                feedbackForm.style.display = 'block';
-                // Store the feedback type (yes/no)
-                feedbackForm.dataset.type = btn.dataset.value;
+        function handleReaction(type) {
+            const feedbackDetail = document.getElementById('feedbackDetail');
+            feedbackDetail.style.display = 'block';
+            document.querySelector('.reaction-buttons').style.opacity = '0.5';
+        }
+        
+        function selectOption(button) {
+            // Remove selected class from all buttons
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
             });
-        });
-
-        document.querySelector('.submit-feedback').addEventListener('click', () => {
-            const feedback = {
-                type: feedbackForm.dataset.type,
-                message: feedbackForm.querySelector('textarea').value,
-                page: window.location.pathname,
-                timestamp: new Date().toISOString()
-            };
             
-            // Here you would typically send this to your server
-            console.log('Feedback:', feedback);
+            // Add selected class to clicked button
+            button.classList.add('selected');
+            selectedType = button.dataset.type;
+        }
+        
+        // Add click event listeners to option buttons
+        document.querySelectorAll('.option-btn').forEach(button => {
+            button.addEventListener('click', () => selectOption(button));
+        });
+        
+        function cancelFeedback() {
+            document.getElementById('feedbackDetail').style.display = 'none';
+            document.getElementById('feedbackMessage').value = '';
+            document.querySelector('.reaction-buttons').style.opacity = '1';
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            selectedType = '';
+        }
+        
+        function submitFeedback() {
+            const message = document.getElementById('feedbackMessage').value;
+            if (!selectedType || !message.trim()) {
+                // Show elegant error message
+                const textarea = document.getElementById('feedbackMessage');
+                textarea.classList.add('error');
+                textarea.setAttribute('placeholder', 'Please write your message...');
+                
+                if (!selectedType) {
+                    document.querySelector('.feedback-options').classList.add('highlight');
+                    setTimeout(() => {
+                        document.querySelector('.feedback-options').classList.remove('highlight');
+                    }, 2000);
+                }
+                return;
+            }
+            
+            // Show sending state
+            const submitBtn = document.querySelector('.submit-btn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const originalText = btnText.textContent;
+            btnText.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
+            const emailSubject = `Documentation Feedback: ${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}`;
+            const mailtoLink = `mailto:modern_chat_doc@flutterfusion.dev?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(message)}`;
+            
+            // Add success animation
+            submitBtn.classList.add('success');
+            setTimeout(() => {
+                window.location.href = mailtoLink;
+            }, 500);
             
             // Show thank you message
-            feedbackForm.innerHTML = '<p>Thank you for your feedback!</p>';
+            document.getElementById('feedbackDetail').style.display = 'none';
+            document.getElementById('thankYouMessage').style.display = 'block';
+            
+            // Reset form after 3 seconds
             setTimeout(() => {
-                feedbackForm.style.display = 'none';
+                document.getElementById('thankYouMessage').style.display = 'none';
+                document.getElementById('feedbackMessage').value = '';
+                document.querySelector('.reaction-buttons').style.opacity = '1';
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                submitBtn.classList.remove('success');
+                submitBtn.disabled = false;
+                btnText.textContent = originalText;
+                selectedType = '';
             }, 3000);
-        });
+        }
     </script>
 </body>
 </html>
